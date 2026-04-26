@@ -2,7 +2,7 @@ import { randomUUID } from 'crypto'
 import { BrowserWindow } from 'electron'
 import { IpcChannels } from '../../shared/ipc-channels'
 import type { Session, TimerState } from '../../shared/types'
-import { upsertSession, getState, getSettings } from '../store/store'
+import { upsertSession, deleteSession, getState, getSettings } from '../store/store'
 
 let state: TimerState = {
   status: 'idle',
@@ -75,14 +75,20 @@ export function stopTimer(): TimerState {
   if (state.status === 'idle' || !state.currentSessionId) return getTimerState()
 
   const totalMs = currentTotalMs()
+  const durationSeconds = Math.round(totalMs / 1000)
   const sessions = getState().sessions
   const existing = sessions[state.currentSessionId]
   if (existing) {
-    upsertSession({
-      ...existing,
-      endTime: Date.now(),
-      duration: Math.round(totalMs / 1000)
-    })
+    if (durationSeconds < 60) {
+      // Treat as a misclick — discard rather than logging.
+      deleteSession(existing.id)
+    } else {
+      upsertSession({
+        ...existing,
+        endTime: Date.now(),
+        duration: durationSeconds
+      })
+    }
   }
 
   state = { status: 'idle', currentSessionId: null, startedAt: null, accumulatedMs: 0 }
@@ -123,8 +129,10 @@ function stopPersistLoop(): void {
 
 function broadcast(): void {
   const snapshot = getTimerState()
+  const persisted = getState()
   for (const win of BrowserWindow.getAllWindows()) {
     win.webContents.send(IpcChannels.TimerStateChanged, snapshot)
+    win.webContents.send('store:state-changed', persisted)
   }
 }
 
@@ -139,7 +147,10 @@ function recoverInterruptedSession(): void {
   const sessions = getState().sessions
   const open = Object.values(sessions).find((s) => s.endTime === null)
   if (!open) return
-  // Crash/quit while running: close it out at the last persisted duration.
+  if (open.duration < 60) {
+    deleteSession(open.id)
+    return
+  }
   upsertSession({
     ...open,
     endTime: open.startTime + open.duration * 1000

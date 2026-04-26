@@ -47,6 +47,8 @@ function RitualGreeting({
         }}
       >
         Good morning.
+        <br />
+        <span style={{ color: 'var(--ink-3)', fontWeight: 500 }}>Give it what you got.</span>
       </div>
 
       <div style={{ flex: 1 }} />
@@ -222,9 +224,6 @@ function RitualMainGoal({
           letterSpacing: '-0.015em'
         }}
       />
-      <div style={{ fontSize: 12.5, color: 'var(--ink-4)', marginTop: 14, lineHeight: 1.5 }}>
-        Make it specific enough that you&apos;ll know if you did it.
-      </div>
     </div>
   )
 }
@@ -382,7 +381,7 @@ export function MorningRitual(): React.JSX.Element {
               </button>
             )}
             {step > 0 && (
-              <GhostButton size="sm" onClick={() => setStep(step - 1)}>
+              <GhostButton size="md" onClick={() => setStep(step - 1)}>
                 Back
               </GhostButton>
             )}

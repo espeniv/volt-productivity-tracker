@@ -49,7 +49,7 @@ function AutoTextarea({
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
-      className="focus-ring"
+      className="focus-ring daily-notes"
       rows={2}
       style={{
         width: '100%',
@@ -280,7 +280,7 @@ export function TodayTab(): React.JSX.Element {
           <AutoTextarea
             value={entry.brainDump}
             onChange={(v) => persist({ brainDump: v })}
-            placeholder="A daily journal — brain dumps, ideas, anything you want to remember…"
+            placeholder="Notes for the day…"
           />
         </section>
       </div>

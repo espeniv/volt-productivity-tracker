@@ -92,6 +92,13 @@ export function upsertSession(session: Session): void {
   s.set('sessions', sessions)
 }
 
+export function deleteSession(id: string): void {
+  const s = requireStore()
+  const sessions = { ...s.get('sessions') }
+  delete sessions[id]
+  s.set('sessions', sessions)
+}
+
 export function upsertEntry(entry: DailyEntry): void {
   const s = requireStore()
   const entries = { ...s.get('entries'), [entry.date]: entry }

@@ -276,8 +276,8 @@ function ActiveTimer({
           style={{
             flex: 1.4,
             height: 40,
-            background: 'var(--ink)',
-            color: 'var(--bg)',
+            background: '#1A1F2A',
+            color: '#F4F6FA',
             border: 'none',
             borderRadius: 10,
             fontSize: 13,
