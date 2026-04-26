@@ -8,9 +8,5 @@ body,
 }
 
 body {
-  background: var(--bg);
-}
-
-body[data-scope='tray'] {
   background: transparent;
 }

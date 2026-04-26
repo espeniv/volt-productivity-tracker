@@ -111,7 +111,7 @@ export function MainWindow(): React.JSX.Element {
       <div style={{ flex: 1, overflow: 'auto' }} className="thin-scroll">
         {highlightTab === 'today' && !settingsOpen && <TodayTab />}
         {highlightTab === 'history' && !settingsOpen && <CalendarTab />}
-        {settingsOpen && <SettingsTab onClose={() => setTab(lastTab)} />}
+        {settingsOpen && <SettingsTab />}
       </div>
     </div>
   )

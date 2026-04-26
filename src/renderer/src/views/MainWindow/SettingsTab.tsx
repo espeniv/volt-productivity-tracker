@@ -1,9 +1,8 @@
-import type { ReactNode, CSSProperties } from 'react'
+import type { ReactNode } from 'react'
 import { useDailyStore } from '../../store/useDailyStore'
-import { Icon, type IconName } from '../../design/Icon'
-import type { Settings, ThemeMode } from '../../../../shared/types'
+import type { Settings } from '../../../../shared/types'
 
-const ACCENTS = ['#5B9DD9', '#1F6B3A', '#B7791F', '#8E4F8E', '#0E7C70', '#4F5B6B']
+const ACCENTS = ['#5B9DD9', '#3FB364', '#D97757', '#EAB308']
 
 function SettingsGroup({
   title,
@@ -141,57 +140,6 @@ function Toggle({
   )
 }
 
-interface SegmentedOption<T extends string> {
-  value: T
-  label: string
-  icon?: IconName
-}
-
-function Segmented<T extends string>({
-  value,
-  onChange,
-  options
-}: {
-  value: T
-  onChange: (v: T) => void
-  options: SegmentedOption<T>[]
-}): React.JSX.Element {
-  return (
-    <div
-      style={{
-        display: 'inline-flex',
-        background: 'var(--bg-sunken)',
-        borderRadius: 10,
-        padding: 2,
-        border: '0.5px solid var(--line)'
-      }}
-    >
-      {options.map((o) => {
-        const active = value === o.value
-        const style: CSSProperties = {
-          background: active ? 'var(--glass-flat)' : 'transparent',
-          border: 'none',
-          padding: '5px 12px',
-          borderRadius: 8,
-          fontSize: 12,
-          color: active ? 'var(--ink)' : 'var(--ink-3)',
-          fontWeight: active ? 500 : 400,
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: 5,
-          boxShadow: active ? 'var(--shadow-sm)' : 'none',
-          cursor: 'pointer'
-        }
-        return (
-          <button key={o.value} onClick={() => onChange(o.value)} style={style}>
-            {o.icon && <Icon name={o.icon} size={12} />}
-            <span>{o.label}</span>
-          </button>
-        )
-      })}
-    </div>
-  )
-}
 
 function rolloverString(hour: number): string {
   return `${String(hour).padStart(2, '0')}:00`
@@ -203,7 +151,7 @@ function parseRollover(s: string): number {
   return Math.max(0, Math.min(23, parseInt(m[1], 10)))
 }
 
-export function SettingsTab({ onClose }: { onClose: () => void }): React.JSX.Element {
+export function SettingsTab(): React.JSX.Element {
   const settings = useDailyStore((s) => s.settings)
   const updateSettingsLocal = useDailyStore((s) => s.updateSettings)
 
@@ -213,45 +161,25 @@ export function SettingsTab({ onClose }: { onClose: () => void }): React.JSX.Ele
   }
 
   return (
-    <div style={{ padding: '24px 44px 44px', maxWidth: 640 }}>
+    <div style={{ padding: '24px 6% 44px', width: '100%' }}>
       <div
         style={{
-          display: 'flex',
-          alignItems: 'baseline',
-          justifyContent: 'space-between',
           marginBottom: 22,
           paddingBottom: 14,
           borderBottom: '0.5px solid var(--line)'
         }}
       >
-        <div>
-          <div
-            style={{
-              fontSize: 20,
-              fontWeight: 600,
-              letterSpacing: '-0.01em',
-              color: 'var(--ink)'
-            }}
-          >
-            Settings
-          </div>
-          <div style={{ fontSize: 12, color: 'var(--ink-4)', marginTop: 2 }}>Customize Daily.</div>
-        </div>
-        <button
-          onClick={onClose}
+        <div
           style={{
-            background: 'transparent',
-            border: '0.5px solid var(--line)',
-            padding: '6px 12px',
-            borderRadius: 8,
-            fontSize: 12.5,
-            color: 'var(--ink-2)',
-            cursor: 'pointer',
-            fontFamily: 'inherit'
+            fontSize: 20,
+            fontWeight: 600,
+            letterSpacing: '-0.01em',
+            color: 'var(--ink)'
           }}
         >
-          Done
-        </button>
+          Settings
+        </div>
+        <div style={{ fontSize: 12, color: 'var(--ink-4)', marginTop: 2 }}>Customize Daily.</div>
       </div>
 
       <SettingsGroup
@@ -293,17 +221,6 @@ export function SettingsTab({ onClose }: { onClose: () => void }): React.JSX.Ele
       </SettingsGroup>
 
       <SettingsGroup title="Appearance">
-        <SettingsRow label="Theme">
-          <Segmented<ThemeMode>
-            value={settings.theme}
-            onChange={(v) => save({ theme: v })}
-            options={[
-              { value: 'light', label: 'Light', icon: 'sun' },
-              { value: 'dark', label: 'Dark', icon: 'moon' },
-              { value: 'system', label: 'System' }
-            ]}
-          />
-        </SettingsRow>
         <SettingsRow label="Accent">
           <div style={{ display: 'flex', gap: 8 }}>
             {ACCENTS.map((c) => (
@@ -345,6 +262,94 @@ export function SettingsTab({ onClose }: { onClose: () => void }): React.JSX.Ele
         >
           <Toggle value={settings.gentleReminder} onChange={(v) => save({ gentleReminder: v })} />
         </SettingsRow>
+      </SettingsGroup>
+
+      <SettingsGroup
+        title="Developer"
+        subtitle="Wipes all sessions, entries and settings, then relaunches."
+      >
+        <button
+          onClick={() => {
+            if (confirm('Reset all Daily data? This cannot be undone.')) {
+              window.api.dev.resetData()
+            }
+          }}
+          style={{
+            background: 'transparent',
+            border: '0.5px solid var(--line-strong)',
+            color: '#C24545',
+            padding: '8px 14px',
+            borderRadius: 8,
+            fontSize: 13,
+            fontWeight: 500,
+            cursor: 'pointer'
+          }}
+        >
+          Reset all data
+        </button>
+
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            marginTop: 14,
+            flexWrap: 'wrap'
+          }}
+        >
+          <button
+            onClick={() => save({ devDayOffset: settings.devDayOffset + 1 })}
+            style={{
+              background: 'transparent',
+              border: '0.5px solid var(--line-strong)',
+              color: 'var(--ink-2)',
+              padding: '8px 14px',
+              borderRadius: 8,
+              fontSize: 13,
+              fontWeight: 500,
+              cursor: 'pointer'
+            }}
+          >
+            Skip ahead 1 day
+          </button>
+          <button
+            onClick={() => save({ devDayOffset: settings.devDayOffset - 1 })}
+            style={{
+              background: 'transparent',
+              border: '0.5px solid var(--line-strong)',
+              color: 'var(--ink-2)',
+              padding: '8px 14px',
+              borderRadius: 8,
+              fontSize: 13,
+              fontWeight: 500,
+              cursor: 'pointer'
+            }}
+          >
+            Go back 1 day
+          </button>
+          {settings.devDayOffset !== 0 && (
+            <button
+              onClick={() => save({ devDayOffset: 0 })}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: 'var(--ink-3)',
+                padding: '8px 6px',
+                fontSize: 12,
+                cursor: 'pointer'
+              }}
+            >
+              Reset offset
+            </button>
+          )}
+          <span style={{ fontSize: 12, color: 'var(--ink-4)' }} className="tnum">
+            {settings.devDayOffset === 0
+              ? 'Real time'
+              : `${settings.devDayOffset > 0 ? '+' : ''}${settings.devDayOffset} day${
+                  Math.abs(settings.devDayOffset) === 1 ? '' : 's'
+                }`}
+          </span>
+        </div>
       </SettingsGroup>
 
       <div

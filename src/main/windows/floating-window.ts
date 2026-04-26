@@ -19,7 +19,9 @@ export function showFloatingWindow(kind: 'onboarding' | 'morning'): BrowserWindo
     frame: false,
     resizable: false,
     fullscreenable: false,
-    backgroundColor: '#ECEEF1',
+    transparent: true,
+    vibrancy: 'popover',
+    visualEffectState: 'active',
     titleBarStyle: 'hiddenInset',
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),

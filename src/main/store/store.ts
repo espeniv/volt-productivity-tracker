@@ -7,9 +7,9 @@ const defaultSettings: Settings = {
   hideDock: true,
   autoLaunch: false,
   accent: '#5B9DD9',
-  theme: 'system',
   gentleReminder: false,
-  onboarded: false
+  onboarded: false,
+  devDayOffset: 0
 }
 
 const schema = {
@@ -50,9 +50,9 @@ const schema = {
       hideDock: { type: 'boolean' },
       autoLaunch: { type: 'boolean' },
       accent: { type: 'string' },
-      theme: { type: 'string', enum: ['light', 'dark', 'system'] },
       gentleReminder: { type: 'boolean' },
-      onboarded: { type: 'boolean' }
+      onboarded: { type: 'boolean' },
+      devDayOffset: { type: 'number' }
     },
     default: defaultSettings
   }
@@ -107,4 +107,12 @@ export function updateSettings(patch: Partial<Settings>): Settings {
 
 export function getSettings(): Settings {
   return requireStore().get('settings')
+}
+
+export function resetAll(): void {
+  const s = requireStore()
+  s.clear()
+  s.set('sessions', {})
+  s.set('entries', {})
+  s.set('settings', defaultSettings)
 }

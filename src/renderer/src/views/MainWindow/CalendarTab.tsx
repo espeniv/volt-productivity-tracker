@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useDailyStore } from '../../store/useDailyStore'
 import { Icon } from '../../design/Icon'
-import { fmtDuration, fmtTimeOfDay, dateKey } from '../../design/format'
+import { fmtDuration, fmtTimeOfDay, dateKey, nowWithOffset } from '../../design/format'
 import type { Session } from '../../../../shared/types'
 
 function pad2(n: number): string {
@@ -123,9 +123,10 @@ export function CalendarTab(): React.JSX.Element {
   const entries = useDailyStore((s) => s.entries)
   const settings = useDailyStore((s) => s.settings)
 
-  const today = new Date()
+  const todayDateMs = nowWithOffset(settings.devDayOffset)
+  const today = new Date(todayDateMs)
   const [view, setView] = useState({ year: today.getFullYear(), month: today.getMonth() })
-  const todayStr = dateKey(Date.now(), settings.dayRolloverHour)
+  const todayStr = dateKey(todayDateMs, settings.dayRolloverHour)
   const [selectedDate, setSelectedDate] = useState<string>(todayStr)
 
   const sessionsByDate = useMemo(() => {

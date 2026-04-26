@@ -35,7 +35,7 @@ export function startTimer(): TimerState {
   const now = Date.now()
   const session: Session = {
     id,
-    date: dateKey(now),
+    date: dateKey(now + (getSettings().devDayOffset || 0) * 86400_000),
     startTime: now,
     endTime: null,
     duration: 0

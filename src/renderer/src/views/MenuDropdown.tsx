@@ -1,15 +1,16 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useDailyStore } from '../store/useDailyStore'
 import { Icon } from '../design/Icon'
 import { Divider } from '../design/Buttons'
-import { fmtClock, fmtDuration, todayLong, dateKey } from '../design/format'
+import { fmtClock, fmtDuration, todayLong, dateKey, nowWithOffset } from '../design/format'
 import type { CSSProperties } from 'react'
 
 const MENU_W = 320
 
 function useTodayKey(): string {
   const rollover = useDailyStore((s) => s.settings.dayRolloverHour)
-  return dateKey(Date.now(), rollover)
+  const offset = useDailyStore((s) => s.settings.devDayOffset)
+  return dateKey(nowWithOffset(offset), rollover)
 }
 
 function useTodaysSessions(): { totalSeconds: number; count: number } {
@@ -99,7 +100,7 @@ function FooterRow({ secondary }: { secondary?: string }): React.JSX.Element {
           cursor: 'pointer'
         }}
       >
-        <Icon name="expand" size={12} /> Open app
+        Open app <Icon name="arrow-right" size={12} />
       </button>
       {secondary && (
         <span style={{ fontSize: 11, color: 'var(--ink-4)', paddingRight: 10 }}>{secondary}</span>
@@ -323,10 +324,20 @@ export function MenuDropdown(): React.JSX.Element {
   const todaysEntry = entries[today]
   const { totalSeconds: totalToday, count: sessionsLogged } = useTodaysSessions()
   const liveSeconds = useLiveSeconds()
+  const rootRef = useRef<HTMLDivElement | null>(null)
+
+  useEffect(() => {
+    const el = rootRef.current
+    if (!el) return
+    const ro = new ResizeObserver(() => {
+      window.api.tray.resize(el.getBoundingClientRect().height)
+    })
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
 
   const wrap: CSSProperties = {
     width: MENU_W,
-    height: '100vh',
     background: 'var(--glass)',
     backdropFilter: 'var(--blur)',
     WebkitBackdropFilter: 'var(--blur)',
@@ -335,11 +346,8 @@ export function MenuDropdown(): React.JSX.Element {
     boxShadow: 'var(--shadow-glass)',
     border: '0.5px solid var(--line-strong)',
     overflow: 'hidden',
-    fontFamily: 'var(--font-sans)',
-    display: 'flex',
-    flexDirection: 'column'
+    fontFamily: 'var(--font-sans)'
   }
-  const spacer: CSSProperties = { flex: 1 }
 
   const isActive = timer.status === 'running' || timer.status === 'paused'
   const hasGoal = !!todaysEntry?.mainGoal?.trim()
@@ -348,7 +356,7 @@ export function MenuDropdown(): React.JSX.Element {
   // Pre-ritual: no main goal set today and timer idle
   if (!hasGoal && !isActive) {
     return (
-      <div style={wrap}>
+      <div ref={rootRef} style={wrap}>
         <div style={{ padding: '20px 18px 14px' }}>
           <div
             style={{
@@ -390,7 +398,6 @@ export function MenuDropdown(): React.JSX.Element {
             <Icon name="arrow-right" size={14} />
           </button>
         </div>
-        <div style={spacer} />
         <Divider />
         <FooterRow />
       </div>
@@ -398,7 +405,7 @@ export function MenuDropdown(): React.JSX.Element {
   }
 
   return (
-    <div style={wrap}>
+    <div ref={rootRef} style={wrap}>
       {hasGoal && (
         <>
           <div style={{ padding: '16px 18px 14px' }}>
@@ -419,7 +426,7 @@ export function MenuDropdown(): React.JSX.Element {
                   fontWeight: 500
                 }}
               >
-                Today&apos;s focus
+                Today&apos;s goal
               </div>
               <div style={{ fontSize: 11, color: 'var(--ink-4)' }} className="tnum">
                 {todayLong().split(',')[0]}
@@ -449,8 +456,6 @@ export function MenuDropdown(): React.JSX.Element {
           <IdleStart totalToday={totalToday} sessionsLogged={sessionsLogged} />
         )}
       </div>
-
-      <div style={spacer} />
 
       {showOverarching && (
         <>

@@ -19,10 +19,6 @@ function App(): React.JSX.Element {
     return () => window.removeEventListener('hashchange', onHashChange)
   }, [])
 
-  useEffect(() => {
-    document.body.dataset.scope = route.startsWith('/tray') ? 'tray' : 'window'
-  }, [route])
-
   if (route.startsWith('/tray')) return <MenuDropdown />
   if (route.startsWith('/onboarding')) return <Onboarding />
   if (route.startsWith('/morning')) return <MorningRitual />

@@ -27,6 +27,10 @@ export function dateKey(ms: number, rolloverHour = 0): string {
   return adjusted.toISOString().slice(0, 10)
 }
 
+export function nowWithOffset(devDayOffset: number): number {
+  return Date.now() + devDayOffset * 86400_000
+}
+
 export function hexA(hex: string, a: number): string {
   const h = hex.replace('#', '')
   const v = h.length === 3 ? h.split('').map((c) => c + c).join('') : h

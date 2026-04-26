@@ -11,6 +11,12 @@ const api = {
   window: {
     closeSelf: (): Promise<void> => ipcRenderer.invoke(IpcChannels.WindowCloseSelf)
   },
+  dev: {
+    resetData: (): Promise<void> => ipcRenderer.invoke(IpcChannels.DevResetData)
+  },
+  tray: {
+    resize: (height: number): Promise<void> => ipcRenderer.invoke(IpcChannels.TrayResize, height)
+  },
   store: {
     getAll: (): Promise<PersistedState> => ipcRenderer.invoke(IpcChannels.StoreGetAll),
     updateEntry: (entry: DailyEntry): Promise<void> =>

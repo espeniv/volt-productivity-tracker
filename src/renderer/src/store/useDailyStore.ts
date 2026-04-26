@@ -25,9 +25,9 @@ const defaultSettings: Settings = {
   hideDock: true,
   autoLaunch: false,
   accent: '#5B9DD9',
-  theme: 'system',
   gentleReminder: false,
-  onboarded: false
+  onboarded: false,
+  devDayOffset: 0
 }
 
 export const useDailyStore = create<DailyStore>((set) => ({

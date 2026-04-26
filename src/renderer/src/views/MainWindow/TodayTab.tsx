@@ -1,12 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useDailyStore } from '../../store/useDailyStore'
-import { Icon } from '../../design/Icon'
-import { fmtDuration, fmtTimeOfDay, dateKey } from '../../design/format'
+import { fmtDuration, fmtTimeOfDay, dateKey, nowWithOffset } from '../../design/format'
 import type { DailyEntry, Session } from '../../../../shared/types'
-
-function todayKey(rolloverHour: number): string {
-  return dateKey(Date.now(), rolloverHour)
-}
 
 function SessionBar({ duration }: { duration: number }): React.JSX.Element {
   const pct = Math.min(1, duration / (90 * 60))
@@ -32,13 +27,56 @@ function SessionBar({ duration }: { duration: number }): React.JSX.Element {
   )
 }
 
+function AutoTextarea({
+  value,
+  onChange,
+  placeholder
+}: {
+  value: string
+  onChange: (v: string) => void
+  placeholder: string
+}): React.JSX.Element {
+  const ref = useRef<HTMLTextAreaElement | null>(null)
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    el.style.height = 'auto'
+    el.style.height = `${Math.max(el.scrollHeight, 56)}px`
+  }, [value])
+  return (
+    <textarea
+      ref={ref}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      placeholder={placeholder}
+      className="focus-ring"
+      rows={2}
+      style={{
+        width: '100%',
+        minHeight: 56,
+        resize: 'none',
+        overflow: 'hidden',
+        background: 'var(--bg-sunken)',
+        border: '0.5px solid var(--line)',
+        borderRadius: 10,
+        outline: 'none',
+        padding: 14,
+        color: 'var(--ink-2)',
+        fontSize: 14,
+        lineHeight: 1.6,
+        fontFamily: 'var(--font-sans)'
+      }}
+    />
+  )
+}
+
 export function TodayTab(): React.JSX.Element {
   const settings = useDailyStore((s) => s.settings)
   const entries = useDailyStore((s) => s.entries)
   const sessions = useDailyStore((s) => s.sessions)
   const upsertEntry = useDailyStore((s) => s.upsertEntry)
 
-  const today = todayKey(settings.dayRolloverHour)
+  const today = dateKey(nowWithOffset(settings.devDayOffset), settings.dayRolloverHour)
   const entry: DailyEntry = entries[today] || {
     date: today,
     mainGoal: '',
@@ -53,7 +91,6 @@ export function TodayTab(): React.JSX.Element {
   const totalToday = todaysSessions.reduce((acc, s) => acc + s.duration, 0)
 
   const [editingGoal, setEditingGoal] = useState(false)
-  const [editingDump, setEditingDump] = useState(false)
 
   const persist = (patch: Partial<DailyEntry>): void => {
     const next = { ...entry, ...patch }
@@ -62,7 +99,7 @@ export function TodayTab(): React.JSX.Element {
   }
 
   return (
-    <div style={{ padding: '32px 44px 44px', maxWidth: 720 }}>
+    <div style={{ padding: '32px 6% 44px', width: '100%' }}>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 14, marginBottom: 6 }}>
         <div
           style={{
@@ -73,24 +110,8 @@ export function TodayTab(): React.JSX.Element {
             fontWeight: 500
           }}
         >
-          Today&apos;s focus
+          Today&apos;s goal
         </div>
-        <button
-          onClick={() => setEditingGoal((v) => !v)}
-          style={{
-            background: 'transparent',
-            border: 'none',
-            color: 'var(--ink-4)',
-            fontSize: 11,
-            padding: 0,
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 4,
-            cursor: 'pointer'
-          }}
-        >
-          <Icon name="edit" size={11} /> {editingGoal ? 'done' : 'edit'}
-        </button>
       </div>
 
       {editingGoal || !entry.mainGoal ? (
@@ -102,7 +123,7 @@ export function TodayTab(): React.JSX.Element {
           onKeyDown={(e) => {
             if (e.key === 'Enter') setEditingGoal(false)
           }}
-          placeholder="Set today's focus"
+          placeholder="Set today's goal"
           className="display focus-ring"
           style={{
             width: '100%',
@@ -140,7 +161,14 @@ export function TodayTab(): React.JSX.Element {
         </div>
       )}
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 32, marginTop: 32 }}>
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+          gap: 32,
+          marginTop: 32
+        }}
+      >
         <section>
           <div
             style={{
@@ -246,68 +274,14 @@ export function TodayTab(): React.JSX.Element {
                 margin: 0
               }}
             >
-              Brain dump
+              Daily notes
             </h3>
-            <button
-              onClick={() => setEditingDump((v) => !v)}
-              style={{
-                background: 'transparent',
-                border: 'none',
-                color: 'var(--ink-4)',
-                fontSize: 11,
-                padding: 0,
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 4,
-                cursor: 'pointer'
-              }}
-            >
-              <Icon name="edit" size={11} /> {editingDump ? 'done' : 'edit'}
-            </button>
           </div>
-          {editingDump || !entry.brainDump ? (
-            <textarea
-              autoFocus={editingDump}
-              value={entry.brainDump}
-              onChange={(e) => persist({ brainDump: e.target.value })}
-              onBlur={() => setEditingDump(false)}
-              placeholder="Anything noisy in your head…"
-              className="focus-ring"
-              style={{
-                width: '100%',
-                height: 160,
-                resize: 'none',
-                background: 'var(--bg-sunken)',
-                border: '0.5px solid var(--line)',
-                borderRadius: 10,
-                outline: 'none',
-                padding: 14,
-                color: 'var(--ink-2)',
-                fontSize: 14,
-                lineHeight: 1.6,
-                fontFamily: 'var(--font-sans)'
-              }}
-            />
-          ) : (
-            <div
-              onClick={() => setEditingDump(true)}
-              style={{
-                width: '100%',
-                minHeight: 100,
-                padding: 14,
-                background: 'var(--bg-sunken)',
-                borderRadius: 10,
-                border: '0.5px solid var(--line)',
-                fontSize: 14,
-                lineHeight: 1.6,
-                color: 'var(--ink-2)',
-                whiteSpace: 'pre-wrap',
-                cursor: 'text'
-              }}
-            >
-              {entry.brainDump}
-            </div>
-          )}
+          <AutoTextarea
+            value={entry.brainDump}
+            onChange={(v) => persist({ brainDump: v })}
+            placeholder="A daily journal — brain dumps, ideas, anything you want to remember…"
+          />
         </section>
       </div>
     </div>

@@ -22,7 +22,9 @@ export function showMainWindow(): BrowserWindow {
     minHeight: 520,
     show: false,
     titleBarStyle: 'hiddenInset',
-    backgroundColor: '#ECEEF1',
+    transparent: true,
+    vibrancy: 'popover',
+    visualEffectState: 'active',
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false

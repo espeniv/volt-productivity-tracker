@@ -21,7 +21,8 @@ export function createTrayWindow(): BrowserWindow {
     fullscreenable: false,
     transparent: true,
     hasShadow: false,
-    vibrancy: 'under-window',
+    vibrancy: 'popover',
+    visualEffectState: 'active',
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false

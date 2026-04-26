@@ -13,17 +13,15 @@ export interface DailyEntry {
   sessions: string[]
 }
 
-export type ThemeMode = 'light' | 'dark' | 'system'
-
 export interface Settings {
   overarchingGoal: string
   dayRolloverHour: number
   hideDock: boolean
   autoLaunch: boolean
   accent: string
-  theme: ThemeMode
   gentleReminder: boolean
   onboarded: boolean
+  devDayOffset: number
 }
 
 export interface PersistedState {

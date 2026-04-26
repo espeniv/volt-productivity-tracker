@@ -3,7 +3,7 @@ import { IpcChannels } from '../../shared/ipc-channels'
 import { showMainWindow } from '../windows/main-window'
 import { getTrayWindow } from '../windows/tray-window'
 import { showFloatingWindow } from '../windows/floating-window'
-import { getState, updateSettings, upsertEntry } from '../store/store'
+import { getState, resetAll, updateSettings, upsertEntry } from '../store/store'
 import { pauseTimer, resumeTimer, startTimer, stopTimer } from '../timer/timer'
 import type { DailyEntry, Settings } from '../../shared/types'
 
@@ -43,6 +43,20 @@ export function registerIpcHandlers(): void {
     applySettingsSideEffects(next)
     broadcastStoreUpdate()
     return next
+  })
+
+  ipcMain.handle(IpcChannels.TrayResize, (_e, height: number) => {
+    const win = getTrayWindow()
+    if (!win) return
+    const [w] = win.getSize()
+    const clamped = Math.max(120, Math.min(800, Math.round(height)))
+    win.setSize(w, clamped, false)
+  })
+
+  ipcMain.handle(IpcChannels.DevResetData, () => {
+    resetAll()
+    app.relaunch()
+    app.exit(0)
   })
 
   ipcMain.handle(IpcChannels.TimerStart, () => startTimer())

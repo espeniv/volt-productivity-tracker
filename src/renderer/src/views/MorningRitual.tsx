@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useDailyStore } from '../store/useDailyStore'
 import { PrimaryButton, GhostButton } from '../design/Buttons'
-import { todayLong, fmtDuration, dateKey } from '../design/format'
+import { todayLong, fmtDuration, dateKey, nowWithOffset } from '../design/format'
 import type { DailyEntry } from '../../../shared/types'
 
 const W = 480
@@ -119,11 +119,11 @@ function RitualBrainDump({
           letterSpacing: '-0.02em'
         }}
       >
-        What&apos;s on your mind?
+        Daily notes
       </div>
       <div style={{ fontSize: 13.5, color: 'var(--ink-3)', lineHeight: 1.55, marginBottom: 18 }}>
-        Anything noisy in your head — worries, ideas, what you slept badly about. Write it down so
-        it stops following you around.
+        A daily journal — brain dumps, ideas, anything you want to remember. Worries, what you
+        slept badly about, plans for the day. Write it down so it stops following you around.
       </div>
       <textarea
         ref={ref}
@@ -235,8 +235,9 @@ export function MorningRitual(): React.JSX.Element {
   const sessions = useDailyStore((s) => s.sessions)
   const upsertEntry = useDailyStore((s) => s.upsertEntry)
 
-  const today = dateKey(Date.now(), settings.dayRolloverHour)
-  const yesterday = dateKey(Date.now() - 86400_000, settings.dayRolloverHour)
+  const nowMs = nowWithOffset(settings.devDayOffset)
+  const today = dateKey(nowMs, settings.dayRolloverHour)
+  const yesterday = dateKey(nowMs - 86400_000, settings.dayRolloverHour)
   const yesterdayEntry = entries[yesterday]
   const yesterdayTotal = useMemo(
     () =>
