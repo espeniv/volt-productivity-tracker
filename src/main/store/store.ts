@@ -5,7 +5,12 @@ const defaultSettings: Settings = {
   overarchingGoal: '',
   dayRolloverHour: 0,
   hideDock: true,
-  autoLaunch: false
+  autoLaunch: false,
+  accent: '#5B9DD9',
+  theme: 'system',
+  userName: '',
+  gentleReminder: false,
+  onboarded: false
 }
 
 const schema = {
@@ -44,7 +49,12 @@ const schema = {
       overarchingGoal: { type: 'string' },
       dayRolloverHour: { type: 'number', minimum: 0, maximum: 23 },
       hideDock: { type: 'boolean' },
-      autoLaunch: { type: 'boolean' }
+      autoLaunch: { type: 'boolean' },
+      accent: { type: 'string' },
+      theme: { type: 'string', enum: ['light', 'dark', 'system'] },
+      userName: { type: 'string' },
+      gentleReminder: { type: 'boolean' },
+      onboarded: { type: 'boolean' }
     },
     default: defaultSettings
   }
@@ -59,6 +69,9 @@ export function initStore(): void {
     schema: schema as any,
     defaults: { sessions: {}, entries: {}, settings: defaultSettings }
   })
+  // Backfill missing fields onto previously-persisted settings
+  const current = store.get('settings')
+  store.set('settings', { ...defaultSettings, ...current })
 }
 
 function requireStore(): Store<PersistedState> {

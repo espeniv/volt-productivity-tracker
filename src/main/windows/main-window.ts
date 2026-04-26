@@ -16,10 +16,14 @@ export function showMainWindow(): BrowserWindow {
   }
 
   mainWindow = new BrowserWindow({
-    width: 1100,
-    height: 720,
+    width: 780,
+    height: 580,
+    minWidth: 720,
+    minHeight: 520,
     show: false,
     titleBarStyle: 'hiddenInset',
+    vibrancy: 'under-window',
+    backgroundColor: '#00000000',
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false

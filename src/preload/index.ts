@@ -6,6 +6,11 @@ import type { DailyEntry, PersistedState, Settings, TimerState } from '../shared
 const api = {
   showMainWindow: (): Promise<void> => ipcRenderer.invoke(IpcChannels.WindowShowMain),
   hideTrayWindow: (): Promise<void> => ipcRenderer.invoke(IpcChannels.WindowHideTray),
+  openMorningRitual: (): Promise<void> => ipcRenderer.invoke(IpcChannels.WindowOpenMorning),
+  openOnboarding: (): Promise<void> => ipcRenderer.invoke(IpcChannels.WindowOpenOnboarding),
+  window: {
+    closeSelf: (): Promise<void> => ipcRenderer.invoke(IpcChannels.WindowCloseSelf)
+  },
   store: {
     getAll: (): Promise<PersistedState> => ipcRenderer.invoke(IpcChannels.StoreGetAll),
     updateEntry: (entry: DailyEntry): Promise<void> =>

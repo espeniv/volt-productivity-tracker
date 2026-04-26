@@ -23,7 +23,12 @@ const defaultSettings: Settings = {
   overarchingGoal: '',
   dayRolloverHour: 0,
   hideDock: true,
-  autoLaunch: false
+  autoLaunch: false,
+  accent: '#5B9DD9',
+  theme: 'system',
+  userName: '',
+  gentleReminder: false,
+  onboarded: false
 }
 
 export const useDailyStore = create<DailyStore>((set) => ({

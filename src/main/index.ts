@@ -2,10 +2,12 @@ import { app, BrowserWindow } from 'electron'
 import { electronApp, optimizer } from '@electron-toolkit/utils'
 import { createTray } from './tray/tray'
 import { createTrayWindow } from './windows/tray-window'
+import { showFloatingWindow } from './windows/floating-window'
 import { getSettings, initStore } from './store/store'
 import { getTimerState, initTimer, stopTimer } from './timer/timer'
 import { initPowerMonitor } from './power/power'
 import { applySettingsSideEffects, registerIpcHandlers } from './ipc/ipc'
+import { initAutoUpdater } from './updater/updater'
 
 app.whenReady().then(() => {
   electronApp.setAppUserModelId('com.daily.app')
@@ -15,13 +17,21 @@ app.whenReady().then(() => {
   })
 
   initStore()
-  applySettingsSideEffects(getSettings())
+  const settings = getSettings()
+  applySettingsSideEffects(settings)
   initTimer()
   initPowerMonitor()
   registerIpcHandlers()
 
   createTrayWindow()
   createTray()
+
+  if (!settings.onboarded) {
+    if (process.platform === 'darwin') app.dock?.show()
+    showFloatingWindow('onboarding')
+  }
+
+  initAutoUpdater()
 })
 
 app.on('window-all-closed', () => {
@@ -33,6 +43,5 @@ app.on('activate', () => {
 })
 
 app.on('before-quit', () => {
-  // Flush in-flight session so duration reflects the last running interval.
   if (getTimerState().status !== 'idle') stopTimer()
 })

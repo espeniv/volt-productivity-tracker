@@ -8,7 +8,10 @@ export const IpcChannels = {
   StoreUpdateEntry: 'store:update-entry',
   StoreUpdateSettings: 'store:update-settings',
   WindowShowMain: 'window:show-main',
-  WindowHideTray: 'window:hide-tray'
+  WindowHideTray: 'window:hide-tray',
+  WindowOpenOnboarding: 'window:open-onboarding',
+  WindowOpenMorning: 'window:open-morning',
+  WindowCloseSelf: 'window:close-self'
 } as const
 
 export type IpcChannel = (typeof IpcChannels)[keyof typeof IpcChannels]

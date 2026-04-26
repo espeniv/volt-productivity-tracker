@@ -1,9 +1,10 @@
-import { app, ipcMain } from 'electron'
+import { app, BrowserWindow, ipcMain } from 'electron'
 import { IpcChannels } from '../../shared/ipc-channels'
 import { showMainWindow } from '../windows/main-window'
 import { getTrayWindow } from '../windows/tray-window'
+import { showFloatingWindow } from '../windows/floating-window'
 import { getState, updateSettings, upsertEntry } from '../store/store'
-import { getTimerState, pauseTimer, resumeTimer, startTimer, stopTimer } from '../timer/timer'
+import { pauseTimer, resumeTimer, startTimer, stopTimer } from '../timer/timer'
 import type { DailyEntry, Settings } from '../../shared/types'
 
 export function registerIpcHandlers(): void {
@@ -16,15 +17,31 @@ export function registerIpcHandlers(): void {
     getTrayWindow()?.hide()
   })
 
+  ipcMain.handle(IpcChannels.WindowOpenOnboarding, () => {
+    if (process.platform === 'darwin') app.dock?.show()
+    showFloatingWindow('onboarding')
+  })
+
+  ipcMain.handle(IpcChannels.WindowOpenMorning, () => {
+    if (process.platform === 'darwin') app.dock?.show()
+    showFloatingWindow('morning')
+  })
+
+  ipcMain.handle(IpcChannels.WindowCloseSelf, (e) => {
+    BrowserWindow.fromWebContents(e.sender)?.close()
+  })
+
   ipcMain.handle(IpcChannels.StoreGetAll, () => getState())
 
   ipcMain.handle(IpcChannels.StoreUpdateEntry, (_e, entry: DailyEntry) => {
     upsertEntry(entry)
+    broadcastStoreUpdate()
   })
 
   ipcMain.handle(IpcChannels.StoreUpdateSettings, (_e, patch: Partial<Settings>) => {
     const next = updateSettings(patch)
     applySettingsSideEffects(next)
+    broadcastStoreUpdate()
     return next
   })
 
@@ -32,7 +49,13 @@ export function registerIpcHandlers(): void {
   ipcMain.handle(IpcChannels.TimerStop, () => stopTimer())
   ipcMain.handle(IpcChannels.TimerPause, () => pauseTimer())
   ipcMain.handle(IpcChannels.TimerResume, () => resumeTimer())
-  ipcMain.handle('timer:get-state', () => getTimerState())
+}
+
+function broadcastStoreUpdate(): void {
+  const state = getState()
+  for (const win of BrowserWindow.getAllWindows()) {
+    win.webContents.send('store:state-changed', state)
+  }
 }
 
 export function applySettingsSideEffects(settings: Settings): void {
@@ -40,5 +63,7 @@ export function applySettingsSideEffects(settings: Settings): void {
     if (settings.hideDock) app.dock?.hide()
     else app.dock?.show()
   }
-  app.setLoginItemSettings({ openAtLogin: settings.autoLaunch })
+  if (app.isPackaged) {
+    app.setLoginItemSettings({ openAtLogin: settings.autoLaunch })
+  }
 }

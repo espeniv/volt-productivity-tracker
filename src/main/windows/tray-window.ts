@@ -10,8 +10,8 @@ export function getTrayWindow(): BrowserWindow | null {
 
 export function createTrayWindow(): BrowserWindow {
   trayWindow = new BrowserWindow({
-    width: 360,
-    height: 480,
+    width: 320,
+    height: 460,
     show: false,
     frame: false,
     resizable: false,
@@ -20,6 +20,8 @@ export function createTrayWindow(): BrowserWindow {
     alwaysOnTop: true,
     fullscreenable: false,
     transparent: true,
+    hasShadow: false,
+    vibrancy: 'under-window',
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false
