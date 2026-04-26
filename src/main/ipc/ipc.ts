@@ -1,7 +1,8 @@
 import { app, BrowserWindow, ipcMain } from 'electron'
 import { IpcChannels } from '../../shared/ipc-channels'
 import { showMainWindow } from '../windows/main-window'
-import { getTrayWindow } from '../windows/tray-window'
+import { getTrayWindow, toggleTrayWindow } from '../windows/tray-window'
+import { getTray } from '../tray/tray'
 import { showFloatingWindow } from '../windows/floating-window'
 import { getState, resetAll, updateSettings, upsertEntry } from '../store/store'
 import { pauseTimer, resumeTimer, startTimer, stopTimer } from '../timer/timer'
@@ -15,6 +16,17 @@ export function registerIpcHandlers(): void {
 
   ipcMain.handle(IpcChannels.WindowHideTray, () => {
     getTrayWindow()?.hide()
+  })
+
+  ipcMain.handle(IpcChannels.WindowShowTray, () => {
+    const tray = getTray()
+    const win = getTrayWindow()
+    if (!win || !tray) return
+    if (win.isVisible()) {
+      win.focus()
+      return
+    }
+    toggleTrayWindow(tray.getBounds())
   })
 
   ipcMain.handle(IpcChannels.WindowOpenOnboarding, () => {

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useDailyStore } from '../../store/useDailyStore'
 import { fmtDuration, fmtTimeOfDay, dateKey, nowWithOffset } from '../../design/format'
+import { useT } from '../../i18n/useT'
 import type { DailyEntry, Session } from '../../../../shared/types'
 
 function SessionBar({ duration }: { duration: number }): React.JSX.Element {
@@ -75,6 +76,7 @@ export function TodayTab(): React.JSX.Element {
   const entries = useDailyStore((s) => s.entries)
   const sessions = useDailyStore((s) => s.sessions)
   const upsertEntry = useDailyStore((s) => s.upsertEntry)
+  const t = useT()
 
   const today = dateKey(nowWithOffset(settings.devDayOffset), settings.dayRolloverHour)
   const entry: DailyEntry = entries[today] || {
@@ -110,7 +112,7 @@ export function TodayTab(): React.JSX.Element {
             fontWeight: 500
           }}
         >
-          Today&apos;s goal
+          {t('todays_goal')}
         </div>
       </div>
 
@@ -123,10 +125,13 @@ export function TodayTab(): React.JSX.Element {
           onKeyDown={(e) => {
             if (e.key === 'Enter') setEditingGoal(false)
           }}
-          placeholder="Set today's goal"
+          placeholder={t('set_today_goal')}
           className="display focus-ring"
           style={{
-            width: '100%',
+            display: 'inline-block',
+            fieldSizing: 'content',
+            maxWidth: '100%',
+            minWidth: 220,
             background: 'transparent',
             border: 'none',
             outline: 'none',
@@ -157,7 +162,7 @@ export function TodayTab(): React.JSX.Element {
 
       {settings.overarchingGoal && (
         <div style={{ fontSize: 13, color: 'var(--ink-4)', marginTop: 8 }}>
-          toward <span style={{ color: 'var(--ink-3)' }}>{settings.overarchingGoal}</span>
+          {t('toward')} <span style={{ color: 'var(--ink-3)' }}>{settings.overarchingGoal}</span>
         </div>
       )}
 
@@ -188,7 +193,7 @@ export function TodayTab(): React.JSX.Element {
                 margin: 0
               }}
             >
-              Sessions
+              {t('sessions_label')}
             </h3>
             <span style={{ fontSize: 12, color: 'var(--ink-3)' }}>
               <span
@@ -197,7 +202,7 @@ export function TodayTab(): React.JSX.Element {
               >
                 {fmtDuration(totalToday)}
               </span>{' '}
-              total
+              {t('total_label')}
             </span>
           </div>
 
@@ -213,7 +218,7 @@ export function TodayTab(): React.JSX.Element {
                   color: 'var(--ink-3)'
                 }}
               >
-                No sessions yet today. Start one from the menu bar.
+                {t('no_sessions_today')}
               </div>
             ) : (
               todaysSessions.map((s, i) => (
@@ -274,13 +279,13 @@ export function TodayTab(): React.JSX.Element {
                 margin: 0
               }}
             >
-              Daily notes
+              {t('daily_notes')}
             </h3>
           </div>
           <AutoTextarea
             value={entry.brainDump}
             onChange={(v) => persist({ brainDump: v })}
-            placeholder="Notes for the day…"
+            placeholder={t('notes_placeholder')}
           />
         </section>
       </div>

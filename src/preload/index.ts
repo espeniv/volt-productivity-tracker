@@ -6,6 +6,7 @@ import type { DailyEntry, PersistedState, Settings, TimerState } from '../shared
 const api = {
   showMainWindow: (): Promise<void> => ipcRenderer.invoke(IpcChannels.WindowShowMain),
   hideTrayWindow: (): Promise<void> => ipcRenderer.invoke(IpcChannels.WindowHideTray),
+  showTrayWindow: (): Promise<void> => ipcRenderer.invoke(IpcChannels.WindowShowTray),
   openMorningRitual: (): Promise<void> => ipcRenderer.invoke(IpcChannels.WindowOpenMorning),
   openOnboarding: (): Promise<void> => ipcRenderer.invoke(IpcChannels.WindowOpenOnboarding),
   window: {

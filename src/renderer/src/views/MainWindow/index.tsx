@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Icon } from '../../design/Icon'
 import { todayLong } from '../../design/format'
+import { useT } from '../../i18n/useT'
 import { TodayTab } from './TodayTab'
 import { CalendarTab } from './CalendarTab'
 import { SettingsTab } from './SettingsTab'
@@ -8,6 +9,7 @@ import { SettingsTab } from './SettingsTab'
 type Tab = 'today' | 'history' | 'settings'
 
 export function MainWindow(): React.JSX.Element {
+  const t = useT()
   const [tab, setTab] = useState<Tab>('today')
   const [lastTab, setLastTab] = useState<Exclude<Tab, 'settings'>>('today')
 
@@ -52,12 +54,13 @@ export function MainWindow(): React.JSX.Element {
             WebkitAppRegion: 'no-drag'
           }}
         >
-          {(['today', 'history'] as const).map((t) => {
-            const active = highlightTab === t && !settingsOpen
+          {(['today', 'history'] as const).map((tabKey) => {
+            const active = highlightTab === tabKey && !settingsOpen
+            const label = tabKey === 'today' ? t('tab_today') : t('tab_history')
             return (
               <button
-                key={t}
-                onClick={() => setTab(t)}
+                key={tabKey}
+                onClick={() => setTab(tabKey)}
                 style={{
                   background: active ? 'var(--bg-sunken)' : 'transparent',
                   border: 'none',
@@ -73,8 +76,8 @@ export function MainWindow(): React.JSX.Element {
                   cursor: 'pointer'
                 }}
               >
-                <Icon name={t === 'today' ? 'today' : 'calendar'} size={13} stroke={1.6} />
-                <span>{t}</span>
+                <Icon name={tabKey === 'today' ? 'today' : 'calendar'} size={13} stroke={1.6} />
+                <span>{label}</span>
               </button>
             )
           })}

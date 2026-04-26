@@ -27,7 +27,8 @@ const defaultSettings: Settings = {
   accent: '#5B9DD9',
   gentleReminder: false,
   onboarded: false,
-  devDayOffset: 0
+  devDayOffset: 0,
+  language: 'en'
 }
 
 export const useDailyStore = create<DailyStore>((set) => ({

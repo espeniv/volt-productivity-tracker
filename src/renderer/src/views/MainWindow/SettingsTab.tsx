@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { useDailyStore } from '../../store/useDailyStore'
-import type { Settings } from '../../../../shared/types'
+import { useT } from '../../i18n/useT'
+import type { Language, Settings } from '../../../../shared/types'
 
 const ACCENTS = ['#5B9DD9', '#3FB364', '#D97757', '#EAB308']
 
@@ -88,7 +89,8 @@ function SettingsInput({
       type={type}
       className={mono ? 'mono focus-ring' : 'focus-ring'}
       style={{
-        width: small ? 100 : '100%',
+        width: small ? 70 : '100%',
+        textAlign: small ? 'center' : 'left',
         background: 'var(--bg-sunken)',
         border: '0.5px solid var(--line)',
         borderRadius: 8,
@@ -154,6 +156,7 @@ function parseRollover(s: string): number {
 export function SettingsTab(): React.JSX.Element {
   const settings = useDailyStore((s) => s.settings)
   const updateSettingsLocal = useDailyStore((s) => s.updateSettings)
+  const t = useT()
 
   const save = (patch: Partial<Settings>): void => {
     updateSettingsLocal(patch)
@@ -177,14 +180,14 @@ export function SettingsTab(): React.JSX.Element {
             color: 'var(--ink)'
           }}
         >
-          Settings
+          {t('settings')}
         </div>
-        <div style={{ fontSize: 12, color: 'var(--ink-4)', marginTop: 2 }}>Customize Daily.</div>
+        <div style={{ fontSize: 12, color: 'var(--ink-4)', marginTop: 2 }}>{t('customize_daily')}</div>
       </div>
 
       <SettingsGroup
-        title="Overarching goal"
-        subtitle="The thing each focused day adds up to."
+        title={t('overarching_goal')}
+        subtitle={t('overarching_goal_sub')}
       >
         <textarea
           value={settings.overarchingGoal}
@@ -208,10 +211,7 @@ export function SettingsTab(): React.JSX.Element {
         />
       </SettingsGroup>
 
-      <SettingsGroup
-        title="Day rollover"
-        subtitle="When 'today' resets. Useful if you work past midnight."
-      >
+      <SettingsGroup title={t('day_rollover')} subtitle={t('day_rollover_sub')}>
         <SettingsInput
           value={rolloverString(settings.dayRolloverHour)}
           onChange={(v) => save({ dayRolloverHour: parseRollover(v) })}
@@ -220,8 +220,8 @@ export function SettingsTab(): React.JSX.Element {
         />
       </SettingsGroup>
 
-      <SettingsGroup title="Appearance">
-        <SettingsRow label="Accent">
+      <SettingsGroup title={t('appearance')}>
+        <SettingsRow label={t('accent')}>
           <div style={{ display: 'flex', gap: 8 }}>
             {ACCENTS.map((c) => (
               <button
@@ -244,22 +244,41 @@ export function SettingsTab(): React.JSX.Element {
             ))}
           </div>
         </SettingsRow>
+        <SettingsRow label={t('language_label')}>
+          <select
+            value={settings.language}
+            onChange={(e) => save({ language: e.target.value as Language })}
+            className="focus-ring"
+            style={{
+              appearance: 'none',
+              WebkitAppearance: 'none',
+              MozAppearance: 'none',
+              background:
+                "var(--bg-sunken) url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6 6-6'/></svg>\") no-repeat right 10px center",
+              border: '0.5px solid var(--line)',
+              borderRadius: 8,
+              padding: '6px 32px 6px 10px',
+              fontSize: 13,
+              color: 'var(--ink)',
+              fontFamily: 'inherit',
+              outline: 'none',
+              cursor: 'pointer'
+            }}
+          >
+            <option value="en" style={{ color: '#000' }}>{t('english')}</option>
+            <option value="no" style={{ color: '#000' }}>{t('norwegian')}</option>
+          </select>
+        </SettingsRow>
       </SettingsGroup>
 
-      <SettingsGroup title="Behavior">
-        <SettingsRow
-          label="Hide app icon in dock"
-          desc="Daily lives only in the menu bar."
-        >
+      <SettingsGroup title={t('behavior')}>
+        <SettingsRow label={t('hide_dock')} desc={t('hide_dock_sub')}>
           <Toggle value={settings.hideDock} onChange={(v) => save({ hideDock: v })} />
         </SettingsRow>
-        <SettingsRow label="Launch at login">
+        <SettingsRow label={t('launch_at_login')}>
           <Toggle value={settings.autoLaunch} onChange={(v) => save({ autoLaunch: v })} />
         </SettingsRow>
-        <SettingsRow
-          label="Gentle reminder if you haven't started"
-          desc="Sent at 10:30 AM. Off by default."
-        >
+        <SettingsRow label={t('gentle_reminder')} desc={t('gentle_reminder_sub')}>
           <Toggle value={settings.gentleReminder} onChange={(v) => save({ gentleReminder: v })} />
         </SettingsRow>
       </SettingsGroup>
@@ -360,7 +379,7 @@ export function SettingsTab(): React.JSX.Element {
           textAlign: 'center'
         }}
       >
-        Daily 1.0 · Made for quiet days.
+        {t('made_for_quiet_days')}
       </div>
     </div>
   )

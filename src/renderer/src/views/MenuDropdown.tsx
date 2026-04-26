@@ -3,6 +3,7 @@ import { useDailyStore } from '../store/useDailyStore'
 import { Icon } from '../design/Icon'
 import { Divider } from '../design/Buttons'
 import { fmtClock, fmtDuration, todayLong, dateKey, nowWithOffset } from '../design/format'
+import { useT } from '../i18n/useT'
 import type { CSSProperties } from 'react'
 
 const MENU_W = 320
@@ -80,6 +81,7 @@ function pillButton(tone: 'accent' | 'ghost', full = true): CSSProperties {
 }
 
 function FooterRow({ secondary }: { secondary?: string }): React.JSX.Element {
+  const t = useT()
   return (
     <div style={{ padding: 8, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
       <button
@@ -100,7 +102,7 @@ function FooterRow({ secondary }: { secondary?: string }): React.JSX.Element {
           cursor: 'pointer'
         }}
       >
-        Open app <Icon name="arrow-right" size={12} />
+        {t('open_app')} <Icon name="arrow-right" size={12} />
       </button>
       {secondary && (
         <span style={{ fontSize: 11, color: 'var(--ink-4)', paddingRight: 10 }}>{secondary}</span>
@@ -110,6 +112,7 @@ function FooterRow({ secondary }: { secondary?: string }): React.JSX.Element {
 }
 
 function OverarchingRow({ goal }: { goal: string }): React.JSX.Element {
+  const t = useT()
   return (
     <div style={{ padding: '12px 18px' }}>
       <div
@@ -122,7 +125,7 @@ function OverarchingRow({ goal }: { goal: string }): React.JSX.Element {
           fontWeight: 500
         }}
       >
-        Working toward
+        {t('working_toward')}
       </div>
       <div style={{ fontSize: 13, color: 'var(--ink-2)', lineHeight: 1.4 }}>{goal}</div>
     </div>
@@ -136,6 +139,7 @@ function IdleStart({
   totalToday: number
   sessionsLogged: number
 }): React.JSX.Element {
+  const t = useT()
   return (
     <div>
       <button
@@ -161,7 +165,7 @@ function IdleStart({
         }}
       >
         <Icon name="play" size={15} />
-        <span>Start a session</span>
+        <span>{t('start_session')}</span>
       </button>
       <div
         style={{
@@ -182,15 +186,15 @@ function IdleStart({
               fontWeight: 500
             }}
           >
-            Today
+            {t('today')}
           </div>
           <div className="tnum" style={{ fontSize: 16, color: 'var(--ink-2)', fontWeight: 500 }}>
-            {totalToday > 0 ? fmtDuration(totalToday) : 'Not started'}
+            {totalToday > 0 ? fmtDuration(totalToday) : t('not_started')}
             {totalToday > 0 && (
               <span
                 style={{ color: 'var(--ink-4)', fontWeight: 400, marginLeft: 6, fontSize: 12.5 }}
               >
-                · {sessionsLogged} {sessionsLogged === 1 ? 'session' : 'sessions'}
+                · {sessionsLogged} {sessionsLogged === 1 ? t('session_one') : t('session_many')}
               </span>
             )}
           </div>
@@ -207,6 +211,7 @@ function ActiveTimer({
   seconds: number
   paused: boolean
 }): React.JSX.Element {
+  const t = useT()
   return (
     <div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
@@ -228,7 +233,7 @@ function ActiveTimer({
             fontWeight: 500
           }}
         >
-          {paused ? 'Paused' : 'Focusing'}
+          {paused ? t('paused') : t('focusing')}
         </span>
       </div>
 
@@ -267,7 +272,7 @@ function ActiveTimer({
           }}
         >
           <Icon name={paused ? 'play' : 'pause'} size={12} />
-          <span>{paused ? 'Resume' : 'Pause'}</span>
+          <span>{paused ? t('resume') : t('pause')}</span>
         </button>
         <button
           onClick={() => window.api.timer.stop()}
@@ -291,7 +296,7 @@ function ActiveTimer({
           }}
         >
           <Icon name="stop" size={11} />
-          <span>End session</span>
+          <span>{t('end_session')}</span>
         </button>
       </div>
       <div
@@ -303,7 +308,7 @@ function ActiveTimer({
           lineHeight: 1.4
         }}
       >
-        Pause for short breaks. End to log this session.
+        {t('end_session_help')}
       </div>
       <style>{`
         @keyframes dailyPulse {
@@ -325,6 +330,7 @@ export function MenuDropdown(): React.JSX.Element {
   const { totalSeconds: totalToday, count: sessionsLogged } = useTodaysSessions()
   const liveSeconds = useLiveSeconds()
   const rootRef = useRef<HTMLDivElement | null>(null)
+  const t = useT()
 
   useEffect(() => {
     const el = rootRef.current
@@ -368,13 +374,13 @@ export function MenuDropdown(): React.JSX.Element {
               fontWeight: 500
             }}
           >
-            Good morning
+            {t('good_morning')}
           </div>
           <div
             className="display"
             style={{ fontSize: 22, lineHeight: 1.2, color: 'var(--ink)', marginBottom: 4 }}
           >
-            Start your day.
+            {t('start_your_day')}
           </div>
           <div
             style={{
@@ -384,7 +390,7 @@ export function MenuDropdown(): React.JSX.Element {
               marginBottom: 16
             }}
           >
-            Two minutes to set today&apos;s focus.
+            {t('two_minutes_focus')}
           </div>
           <button
             onClick={() => {
@@ -394,7 +400,7 @@ export function MenuDropdown(): React.JSX.Element {
             className="focus-ring"
             style={pillButton('accent')}
           >
-            <span>Begin</span>
+            <span>{t('begin')}</span>
             <Icon name="arrow-right" size={14} />
           </button>
         </div>
@@ -426,7 +432,7 @@ export function MenuDropdown(): React.JSX.Element {
                   fontWeight: 500
                 }}
               >
-                Today&apos;s goal
+                {t('todays_goal')}
               </div>
               <div style={{ fontSize: 11, color: 'var(--ink-4)' }} className="tnum">
                 {todayLong().split(',')[0]}

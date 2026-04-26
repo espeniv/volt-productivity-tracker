@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import { useDailyStore } from '../store/useDailyStore'
 import { PrimaryButton, GhostButton } from '../design/Buttons'
+import { useT } from '../i18n/useT'
 
 const W = 480
 const H = 600
 
 function OnbWelcome(): React.JSX.Element {
+  const t = useT()
   return (
     <div
       style={{
@@ -15,12 +17,6 @@ function OnbWelcome(): React.JSX.Element {
         flexDirection: 'column'
       }}
     >
-      <div style={{ marginBottom: 32 }}>
-        <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
-          <circle cx="22" cy="22" r="9" stroke="var(--accent)" strokeWidth="1.8" />
-          <line x1="6" y1="32" x2="38" y2="32" stroke="var(--ink-3)" strokeWidth="1" />
-        </svg>
-      </div>
       <div
         className="display"
         style={{
@@ -32,18 +28,18 @@ function OnbWelcome(): React.JSX.Element {
           fontWeight: 600
         }}
       >
-        A small ritual for
+        {t('small_ritual_for')}
         <br />
-        <span style={{ color: 'var(--ink-3)', fontWeight: 500 }}>focused days.</span>
+        <span style={{ color: 'var(--ink-3)', fontWeight: 500 }}>{t('focused_days')}</span>
       </div>
       <div
         style={{ fontSize: 15.5, color: 'var(--ink-2)', lineHeight: 1.55, maxWidth: 360 }}
       >
-        Each morning, choose one thing that matters. Track the time you spend on it.
+        {t('each_morning')}
       </div>
       <div style={{ flex: 1 }} />
       <div style={{ fontSize: 12, color: 'var(--ink-4)' }}>
-        No accounts. No streaks. No notifications you didn&apos;t ask for.
+        {t('no_accounts')}
       </div>
     </div>
   )
@@ -56,6 +52,7 @@ function OnbOverarching({
   value: string
   onChange: (v: string) => void
 }): React.JSX.Element {
+  const t = useT()
   const ref = useRef<HTMLInputElement | null>(null)
   useEffect(() => {
     ref.current?.focus()
@@ -80,16 +77,16 @@ function OnbOverarching({
           letterSpacing: '-0.02em'
         }}
       >
-        What are you working toward?
+        {t('what_are_you_working_toward')}
       </div>
       <div style={{ fontSize: 14, color: 'var(--ink-3)', lineHeight: 1.55, marginBottom: 32 }}>
-        Your big &ldquo;why&rdquo;. The thing each focused day adds up to. You can change this anytime.
+        {t('why_subtitle')}
       </div>
       <input
         ref={ref}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        placeholder="Submit dissertation by August"
+        placeholder={t('overarching_placeholder')}
         className="focus-ring display"
         style={{
           width: '100%',
@@ -105,14 +102,17 @@ function OnbOverarching({
           letterSpacing: '-0.015em'
         }}
       />
-      <div style={{ fontSize: 12, color: 'var(--ink-4)', marginTop: 14, lineHeight: 1.6 }}>
-        Examples: Launch the side project · Learn Spanish to B1 · Finish the novel manuscript
-      </div>
     </div>
   )
 }
 
 function OnbMenuBar(): React.JSX.Element {
+  const t = useT()
+  const items: [string, string][] = [
+    [t('todays_focus_visible'), t('todays_focus_visible_sub')],
+    [t('one_click_timer'), t('one_click_timer_sub')],
+    [t('open_full_window'), t('open_full_window_sub')]
+  ]
   return (
     <div
       style={{
@@ -133,20 +133,14 @@ function OnbMenuBar(): React.JSX.Element {
           letterSpacing: '-0.02em'
         }}
       >
-        Daily lives in your menu bar.
+        {t('menu_bar_lives_here')}
       </div>
       <div style={{ fontSize: 14, color: 'var(--ink-3)', lineHeight: 1.55, marginBottom: 22 }}>
-        Click the icon up top to start or stop a session. That&apos;s where you&apos;ll spend most of
-        your time.
+        {t('menu_bar_intro')}
       </div>
-      <div style={{ flex: 1 }} />
       <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 12 }}>
-        {[
-          ["Today's focus", 'Always visible at a glance.'],
-          ['One-click timer', "Start when you're ready. End when you're done."],
-          ['Open the full window', "For your day's log, calendar, and settings."]
-        ].map(([t, d]) => (
-          <li key={t} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+        {items.map(([title, sub]) => (
+          <li key={title} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
             <span
               style={{
                 width: 5,
@@ -158,8 +152,8 @@ function OnbMenuBar(): React.JSX.Element {
               }}
             />
             <div>
-              <div style={{ fontSize: 13.5, color: 'var(--ink)', fontWeight: 500 }}>{t}</div>
-              <div style={{ fontSize: 13, color: 'var(--ink-3)', lineHeight: 1.5 }}>{d}</div>
+              <div style={{ fontSize: 13.5, color: 'var(--ink)', fontWeight: 500 }}>{title}</div>
+              <div style={{ fontSize: 13, color: 'var(--ink-3)', lineHeight: 1.5 }}>{sub}</div>
             </div>
           </li>
         ))}
@@ -171,6 +165,7 @@ function OnbMenuBar(): React.JSX.Element {
 export function Onboarding(): React.JSX.Element {
   const settings = useDailyStore((s) => s.settings)
   const updateSettingsLocal = useDailyStore((s) => s.updateSettings)
+  const t = useT()
 
   const [step, setStep] = useState(0)
   const [goal, setGoal] = useState(settings.overarchingGoal)
@@ -232,7 +227,7 @@ export function Onboarding(): React.JSX.Element {
               fontWeight: 500
             }}
           >
-            Welcome to Daily
+            {t('welcome_to_daily')}
           </div>
         </div>
 
@@ -268,7 +263,7 @@ export function Onboarding(): React.JSX.Element {
           <div style={{ display: 'flex', gap: 8 }}>
             {step > 0 && (
               <GhostButton size="md" icon="arrow-left" onClick={() => setStep(step - 1)}>
-                Back
+                {t('back')}
               </GhostButton>
             )}
             {step < total - 1 ? (
@@ -279,11 +274,11 @@ export function Onboarding(): React.JSX.Element {
                 disabled={!canContinue(step)}
                 tone={canContinue(step) ? 'accent' : 'ghost'}
               >
-                Continue
+                {t('continue_label')}
               </PrimaryButton>
             ) : (
               <PrimaryButton size="md" onClick={finish} iconRight="arrow-right">
-                Begin
+                {t('begin')}
               </PrimaryButton>
             )}
           </div>

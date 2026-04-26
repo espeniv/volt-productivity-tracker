@@ -9,7 +9,8 @@ const defaultSettings: Settings = {
   accent: '#5B9DD9',
   gentleReminder: false,
   onboarded: false,
-  devDayOffset: 0
+  devDayOffset: 0,
+  language: 'en'
 }
 
 const schema = {
@@ -36,7 +37,8 @@ const schema = {
         date: { type: 'string' },
         mainGoal: { type: 'string' },
         brainDump: { type: 'string' },
-        sessions: { type: 'array', items: { type: 'string' } }
+        sessions: { type: 'array', items: { type: 'string' } },
+        mood: { type: 'number' }
       },
       required: ['date', 'mainGoal', 'brainDump', 'sessions']
     },
@@ -52,7 +54,8 @@ const schema = {
       accent: { type: 'string' },
       gentleReminder: { type: 'boolean' },
       onboarded: { type: 'boolean' },
-      devDayOffset: { type: 'number' }
+      devDayOffset: { type: 'number' },
+      language: { type: 'string', enum: ['en', 'no'] }
     },
     default: defaultSettings
   }

@@ -1,3 +1,5 @@
+export type Language = 'en' | 'no'
+
 export interface Session {
   id: string
   date: string
@@ -11,6 +13,7 @@ export interface DailyEntry {
   mainGoal: string
   brainDump: string
   sessions: string[]
+  mood?: number
 }
 
 export interface Settings {
@@ -22,6 +25,7 @@ export interface Settings {
   gentleReminder: boolean
   onboarded: boolean
   devDayOffset: number
+  language: Language
 }
 
 export interface PersistedState {

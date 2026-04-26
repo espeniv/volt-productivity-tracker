@@ -9,6 +9,7 @@ export const IpcChannels = {
   StoreUpdateSettings: 'store:update-settings',
   WindowShowMain: 'window:show-main',
   WindowHideTray: 'window:hide-tray',
+  WindowShowTray: 'window:show-tray',
   WindowOpenOnboarding: 'window:open-onboarding',
   WindowOpenMorning: 'window:open-morning',
   WindowCloseSelf: 'window:close-self',

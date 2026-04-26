@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { useDailyStore } from '../../store/useDailyStore'
 import { Icon } from '../../design/Icon'
 import { fmtDuration, fmtTimeOfDay, dateKey, nowWithOffset } from '../../design/format'
+import { useT } from '../../i18n/useT'
 import type { Session } from '../../../../shared/types'
 
 function pad2(n: number): string {
@@ -122,6 +123,7 @@ export function CalendarTab(): React.JSX.Element {
   const sessions = useDailyStore((s) => s.sessions)
   const entries = useDailyStore((s) => s.entries)
   const settings = useDailyStore((s) => s.settings)
+  const t = useT()
 
   const todayDateMs = nowWithOffset(settings.devDayOffset)
   const today = new Date(todayDateMs)
@@ -247,7 +249,7 @@ export function CalendarTab(): React.JSX.Element {
             color: 'var(--ink-4)'
           }}
         >
-          <span>Less</span>
+          <span>{t('less')}</span>
           {[0, 0.25, 0.55, 0.85, 1].map((o, i) => (
             <span
               key={i}
@@ -261,10 +263,10 @@ export function CalendarTab(): React.JSX.Element {
               }}
             />
           ))}
-          <span>More</span>
+          <span>{t('more')}</span>
           <div style={{ flex: 1 }} />
           <span className="tnum">
-            {monthLabel.split(' ')[0].slice(0, 3)} · {fmtDuration(monthTotalSeconds)} logged
+            {monthLabel.split(' ')[0].slice(0, 3)} · {fmtDuration(monthTotalSeconds)} {t('logged')}
           </span>
         </div>
       </div>
@@ -281,7 +283,7 @@ export function CalendarTab(): React.JSX.Element {
           }}
         >
           {selectedDate === todayStr
-            ? 'Today'
+            ? t('today')
             : new Date(selectedDate).toLocaleDateString(undefined, {
                 month: 'long',
                 day: 'numeric',
@@ -312,14 +314,14 @@ export function CalendarTab(): React.JSX.Element {
               fontWeight: 500
             }}
           >
-            {selSessions.length === 0 ? 'A quiet day.' : 'No goal logged.'}
+            {selSessions.length === 0 ? t('a_quiet_day') : t('no_goal_logged')}
           </div>
         )}
 
         {selSessions.length > 0 && (
           <div style={{ display: 'flex', gap: 16, marginBottom: 18 }}>
-            <Stat label="Focused" value={fmtDuration(selTotalSeconds)} />
-            <Stat label="Sessions" value={selSessions.length} />
+            <Stat label={t('focused_label')} value={fmtDuration(selTotalSeconds)} />
+            <Stat label={t('sessions_label')} value={selSessions.length} />
           </div>
         )}
 
@@ -350,7 +352,7 @@ export function CalendarTab(): React.JSX.Element {
             fontWeight: 500
           }}
         >
-          Sessions
+          {t('sessions_label')}
         </div>
         <div style={{ flex: 1, overflow: 'auto' }} className="thin-scroll">
           {selSessions.length === 0 ? (
