@@ -22,7 +22,6 @@ export interface Settings {
   autoLaunch: boolean
   accent: string
   theme: ThemeMode
-  userName: string
   gentleReminder: boolean
   onboarded: boolean
 }

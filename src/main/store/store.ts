@@ -8,7 +8,6 @@ const defaultSettings: Settings = {
   autoLaunch: false,
   accent: '#5B9DD9',
   theme: 'system',
-  userName: '',
   gentleReminder: false,
   onboarded: false
 }
@@ -52,7 +51,6 @@ const schema = {
       autoLaunch: { type: 'boolean' },
       accent: { type: 'string' },
       theme: { type: 'string', enum: ['light', 'dark', 'system'] },
-      userName: { type: 'string' },
       gentleReminder: { type: 'boolean' },
       onboarded: { type: 'boolean' }
     },

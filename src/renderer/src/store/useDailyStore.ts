@@ -26,7 +26,6 @@ const defaultSettings: Settings = {
   autoLaunch: false,
   accent: '#5B9DD9',
   theme: 'system',
-  userName: '',
   gentleReminder: false,
   onboarded: false
 }

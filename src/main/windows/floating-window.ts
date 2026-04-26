@@ -19,11 +19,8 @@ export function showFloatingWindow(kind: 'onboarding' | 'morning'): BrowserWindo
     frame: false,
     resizable: false,
     fullscreenable: false,
-    transparent: true,
-    hasShadow: true,
-    vibrancy: 'under-window',
-    backgroundColor: '#00000000',
-    titleBarStyle: 'customButtonsOnHover',
+    backgroundColor: '#ECEEF1',
+    titleBarStyle: 'hiddenInset',
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false
@@ -37,6 +34,7 @@ export function showFloatingWindow(kind: 'onboarding' | 'morning'): BrowserWindo
 
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
     win.loadURL(`${process.env['ELECTRON_RENDERER_URL']}/#/${kind}`)
+    win.webContents.once('did-frame-finish-load', () => win.webContents.openDevTools({ mode: 'detach' }))
   } else {
     win.loadFile(join(__dirname, '../renderer/index.html'), { hash: `/${kind}` })
   }

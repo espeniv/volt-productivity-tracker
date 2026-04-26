@@ -280,13 +280,6 @@ export function SettingsTab({ onClose }: { onClose: () => void }): React.JSX.Ele
         />
       </SettingsGroup>
 
-      <SettingsGroup title="Your name">
-        <SettingsInput
-          value={settings.userName}
-          onChange={(v) => save({ userName: v })}
-        />
-      </SettingsGroup>
-
       <SettingsGroup
         title="Day rollover"
         subtitle="When 'today' resets. Useful if you work past midnight."

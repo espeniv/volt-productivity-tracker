@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 import { useDailyStore } from '../store/useDailyStore'
-import { Icon } from '../design/Icon'
 import { PrimaryButton, GhostButton } from '../design/Buttons'
 
 const W = 480
@@ -46,66 +45,6 @@ function OnbWelcome(): React.JSX.Element {
       <div style={{ fontSize: 12, color: 'var(--ink-4)' }}>
         No accounts. No streaks. No notifications you didn&apos;t ask for.
       </div>
-    </div>
-  )
-}
-
-function OnbName({
-  value,
-  onChange
-}: {
-  value: string
-  onChange: (v: string) => void
-}): React.JSX.Element {
-  const ref = useRef<HTMLInputElement | null>(null)
-  useEffect(() => {
-    ref.current?.focus()
-  }, [])
-  return (
-    <div
-      style={{
-        height: '100%',
-        padding: '48px 48px 24px',
-        display: 'flex',
-        flexDirection: 'column'
-      }}
-    >
-      <div
-        className="display"
-        style={{
-          fontSize: 28,
-          lineHeight: 1.2,
-          color: 'var(--ink)',
-          marginBottom: 12,
-          fontWeight: 600,
-          letterSpacing: '-0.02em'
-        }}
-      >
-        What&apos;s your name?
-      </div>
-      <div style={{ fontSize: 14, color: 'var(--ink-3)', lineHeight: 1.55, marginBottom: 32 }}>
-        So Daily can greet you each morning.
-      </div>
-      <input
-        ref={ref}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder="Your name"
-        className="focus-ring display"
-        style={{
-          width: '100%',
-          background: 'transparent',
-          border: 'none',
-          outline: 'none',
-          borderBottom: '1.5px solid var(--accent)',
-          fontSize: 22,
-          lineHeight: 1.4,
-          padding: '8px 0',
-          color: 'var(--ink)',
-          fontWeight: 500,
-          letterSpacing: '-0.015em'
-        }}
-      />
     </div>
   )
 }
@@ -234,20 +173,18 @@ export function Onboarding(): React.JSX.Element {
   const updateSettingsLocal = useDailyStore((s) => s.updateSettings)
 
   const [step, setStep] = useState(0)
-  const [name, setName] = useState(settings.userName)
   const [goal, setGoal] = useState(settings.overarchingGoal)
-  const total = 4
+  const total = 3
 
   const finish = async (): Promise<void> => {
-    const patch = { userName: name, overarchingGoal: goal, onboarded: true }
+    const patch = { overarchingGoal: goal, onboarded: true }
     updateSettingsLocal(patch)
     await window.api.store.updateSettings(patch)
     window.api.window.closeSelf()
   }
 
   const canContinue = (s: number): boolean => {
-    if (s === 1) return !!name.trim()
-    if (s === 2) return !!goal.trim()
+    if (s === 1) return !!goal.trim()
     return true
   }
 
@@ -279,7 +216,6 @@ export function Onboarding(): React.JSX.Element {
             padding: '0 14px',
             display: 'flex',
             alignItems: 'center',
-            borderBottom: '0.5px solid var(--line)',
             position: 'relative',
             // @ts-expect-error
             WebkitAppRegion: 'drag'
@@ -302,9 +238,8 @@ export function Onboarding(): React.JSX.Element {
 
         <div style={{ flex: 1, overflow: 'hidden' }}>
           {step === 0 && <OnbWelcome />}
-          {step === 1 && <OnbName value={name} onChange={setName} />}
-          {step === 2 && <OnbOverarching value={goal} onChange={setGoal} />}
-          {step === 3 && <OnbMenuBar />}
+          {step === 1 && <OnbOverarching value={goal} onChange={setGoal} />}
+          {step === 2 && <OnbMenuBar />}
         </div>
 
         <div
@@ -313,8 +248,7 @@ export function Onboarding(): React.JSX.Element {
             padding: '0 20px',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'space-between',
-            borderTop: '0.5px solid var(--line)'
+            justifyContent: 'space-between'
           }}
         >
           <div style={{ display: 'flex', gap: 5 }}>
@@ -358,6 +292,3 @@ export function Onboarding(): React.JSX.Element {
     </div>
   )
 }
-
-// fallback to ensure Icon import is used (lint)
-void Icon

@@ -22,8 +22,7 @@ export function showMainWindow(): BrowserWindow {
     minHeight: 520,
     show: false,
     titleBarStyle: 'hiddenInset',
-    vibrancy: 'under-window',
-    backgroundColor: '#00000000',
+    backgroundColor: '#ECEEF1',
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false
@@ -41,6 +40,7 @@ export function showMainWindow(): BrowserWindow {
 
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
     mainWindow.loadURL(`${process.env['ELECTRON_RENDERER_URL']}/#/main`)
+    mainWindow.webContents.once('did-frame-finish-load', () => mainWindow?.webContents.openDevTools({ mode: 'detach' }))
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'), { hash: '/main' })
   }

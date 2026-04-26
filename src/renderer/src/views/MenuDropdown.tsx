@@ -326,6 +326,7 @@ export function MenuDropdown(): React.JSX.Element {
 
   const wrap: CSSProperties = {
     width: MENU_W,
+    height: '100vh',
     background: 'var(--glass)',
     backdropFilter: 'var(--blur)',
     WebkitBackdropFilter: 'var(--blur)',
@@ -334,8 +335,11 @@ export function MenuDropdown(): React.JSX.Element {
     boxShadow: 'var(--shadow-glass)',
     border: '0.5px solid var(--line-strong)',
     overflow: 'hidden',
-    fontFamily: 'var(--font-sans)'
+    fontFamily: 'var(--font-sans)',
+    display: 'flex',
+    flexDirection: 'column'
   }
+  const spacer: CSSProperties = { flex: 1 }
 
   const isActive = timer.status === 'running' || timer.status === 'paused'
   const hasGoal = !!todaysEntry?.mainGoal?.trim()
@@ -356,7 +360,7 @@ export function MenuDropdown(): React.JSX.Element {
               fontWeight: 500
             }}
           >
-            Good morning{settings.userName ? `, ${settings.userName}` : ''}
+            Good morning
           </div>
           <div
             className="display"
@@ -386,6 +390,7 @@ export function MenuDropdown(): React.JSX.Element {
             <Icon name="arrow-right" size={14} />
           </button>
         </div>
+        <div style={spacer} />
         <Divider />
         <FooterRow />
       </div>
@@ -444,6 +449,8 @@ export function MenuDropdown(): React.JSX.Element {
           <IdleStart totalToday={totalToday} sessionsLogged={sessionsLogged} />
         )}
       </div>
+
+      <div style={spacer} />
 
       {showOverarching && (
         <>
