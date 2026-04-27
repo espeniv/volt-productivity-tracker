@@ -3,6 +3,8 @@ import type { Language } from '../../../shared/types'
 export const translations = {
   // Tray
   good_morning: { en: 'Good morning', no: 'God morgen' },
+  good_afternoon: { en: 'Good afternoon', no: 'God ettermiddag' },
+  good_evening: { en: 'Good evening', no: 'God kveld' },
   start_your_day: { en: 'Start your day.', no: 'Start dagen.' },
   two_minutes_focus: {
     en: "Two minutes to set today's focus.",
@@ -20,7 +22,7 @@ export const translations = {
   pause: { en: 'Pause', no: 'Pause' },
   resume: { en: 'Resume', no: 'Fortsett' },
   end_session: { en: 'End session', no: 'Avslutt økt' },
-  working_toward: { en: 'Working toward', no: 'Jobber mot' },
+  working_toward: { en: 'Long-term goal', no: 'Langsiktig mål' },
   open_app: { en: 'Open app', no: 'Åpne app' },
   start_session: { en: 'Start a session', no: 'Start en økt' },
 
@@ -33,6 +35,10 @@ export const translations = {
   daily_notes_long: {
     en: 'A daily journal for brain dumps, ideas, or anything you want to remember. Worries, what you slept badly about, plans for the day. Write it down so it stops following you around.',
     no: 'En daglig journal for tanker, ideer, alt du vil huske. Bekymringer, det du sov dårlig av, planer for dagen. Skriv det ned så det slutter å følge deg.'
+  },
+  daily_notes_hint: {
+    en: 'Write anything to get it out of your head before you start the day.',
+    no: 'Skriv hva som helst for å få det ut av hodet før dagen starter.'
   },
   start_typing: { en: 'Start typing…', no: 'Begynn å skrive…' },
   one_thing_today: {
@@ -89,7 +95,8 @@ export const translations = {
   rating_label: { en: 'Rating', no: 'Vurdering' },
 
   // Onboarding
-  welcome_to_daily: { en: 'Welcome to Daily', no: 'Velkommen til Daily' },
+  welcome_to_daily: { en: 'Welcome to Volt', no: 'Velkommen til Volt' },
+  tagline: { en: 'Daily focus tracker', no: 'Daglig fokussporing' },
   small_ritual_for: { en: 'A small ritual for', no: 'Et lite rituale for' },
   focused_days: { en: 'focused days.', no: 'fokuserte dager.' },
   each_morning: {
@@ -117,8 +124,8 @@ export const translations = {
     no: 'Det langsiktige målet ditt'
   },
   menu_bar_lives_here: {
-    en: 'Daily lives in your menu bar.',
-    no: 'Daily ligger i menylinjen.'
+    en: 'Volt lives in your menu bar.',
+    no: 'Volt ligger i menylinjen.'
   },
   menu_bar_intro: {
     en: "Click the icon up top to start or stop a session. That's where you'll spend most of your time.",
@@ -138,6 +145,10 @@ export const translations = {
   open_full_window_sub: {
     en: "For your day's log, calendar, and settings.",
     no: 'For dagens logg, kalender og innstillinger.'
+  },
+  onboarding_to_morning_hint: {
+    en: "Next, we'll start today's morning check-in.",
+    no: 'Nå starter vi dagens morgensjekk.'
   },
 
   // Tabs
@@ -165,8 +176,14 @@ export const translations = {
 
   // Settings
   settings: { en: 'Settings', no: 'Innstillinger' },
-  customize_daily: { en: 'Customize Daily.', no: 'Tilpass Daily.' },
-  overarching_goal: { en: 'Overarching goal', no: 'Overordnet mål' },
+  customize_daily: { en: 'Customize Volt.', no: 'Tilpass Volt.' },
+  suggestions_title: { en: 'Suggestions', no: 'Forslag' },
+  suggestions_sub: {
+    en: "Have an idea or found a bug? I'd love to hear it.",
+    no: 'Har du et forslag eller funnet en feil? Send det gjerne over.'
+  },
+  send_feedback: { en: 'Send feedback', no: 'Send tilbakemelding' },
+  overarching_goal: { en: 'Long-term goal', no: 'Langsiktig mål' },
   overarching_goal_sub: {
     en: 'The thing each focused day adds up to.',
     no: 'Det hver fokuserte dag bygger mot.'
@@ -181,8 +198,8 @@ export const translations = {
   behavior: { en: 'Behavior', no: 'Atferd' },
   hide_dock: { en: 'Hide app icon in dock', no: 'Skjul app-ikonet i Dock' },
   hide_dock_sub: {
-    en: 'Daily lives only in the menu bar.',
-    no: 'Daily ligger kun i menylinjen.'
+    en: 'Volt lives only in the menu bar.',
+    no: 'Volt ligger kun i menylinjen.'
   },
   launch_at_login: { en: 'Launch at login', no: 'Start ved innlogging' },
   gentle_reminder: {
@@ -190,15 +207,15 @@ export const translations = {
     no: 'Påminnelse hvis du ikke har startet'
   },
   gentle_reminder_sub: {
-    en: 'Sent at 10:30 AM. Off by default.',
-    no: 'Sendes kl. 10:30. Av som standard.'
+    en: 'Sent at 10:00 AM. Off by default.',
+    no: 'Sendes kl. 10:00. Av som standard.'
   },
   language_label: { en: 'Language', no: 'Språk' },
   english: { en: 'English', no: 'Engelsk' },
   norwegian: { en: 'Norwegian', no: 'Norsk' },
   made_for_quiet_days: {
-    en: 'Daily 1.0 · Espen Iversen',
-    no: 'Daily 1.0 · Espen Iversen'
+    en: 'Volt 0.1 · Daily focus tracker',
+    no: 'Volt 0.1 · Daglig fokussporing'
   }
 } as const
 

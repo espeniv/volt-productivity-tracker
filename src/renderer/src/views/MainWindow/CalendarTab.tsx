@@ -87,11 +87,12 @@ function DayCell({
         background: hasLoad
           ? `color-mix(in oklch, var(--accent) ${15 + intensity * 65}%, transparent)`
           : 'var(--bg-sunken)',
-        border: selected
-          ? '1.5px solid var(--ink)'
+        border: '0.5px solid var(--line)',
+        boxShadow: selected
+          ? 'inset 0 0 0 1.5px var(--ink)'
           : isToday
-            ? '1px solid var(--accent)'
-            : '0.5px solid var(--line)',
+            ? 'inset 0 0 0 1px var(--accent)'
+            : 'none',
         borderRadius: 8,
         color: hasLoad && intensity > 0.55 ? 'white' : 'var(--ink-2)',
         fontSize: 12,

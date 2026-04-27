@@ -58,14 +58,13 @@ function AutoTextarea({
       rows={2}
       style={{
         width: '100%',
-        minHeight: 56,
+        minHeight: 40,
         resize: 'none',
         overflow: 'hidden',
-        background: 'var(--bg-sunken)',
-        border: '0.5px solid var(--line)',
-        borderRadius: 10,
+        background: 'transparent',
+        border: 'none',
         outline: 'none',
-        padding: 14,
+        padding: 0,
         color: 'var(--ink-2)',
         fontSize: 14,
         lineHeight: 1.6,
@@ -284,7 +283,8 @@ export function TodayTab(): React.JSX.Element {
 
       {settings.overarchingGoal && (
         <div style={{ fontSize: 13, color: 'var(--ink-4)', marginTop: 14 }}>
-          {t('toward')} <span style={{ color: 'var(--ink-3)' }}>{settings.overarchingGoal}</span>
+          {t('working_toward')}:{' '}
+          <span style={{ color: 'var(--ink-3)' }}>{settings.overarchingGoal}</span>
         </div>
       )}
 
@@ -301,7 +301,7 @@ export function TodayTab(): React.JSX.Element {
             style={{
               height: 24,
               display: 'flex',
-              alignItems: 'baseline',
+              alignItems: 'center',
               justifyContent: 'space-between',
               marginBottom: 14
             }}
@@ -388,7 +388,7 @@ export function TodayTab(): React.JSX.Element {
             style={{
               height: 24,
               display: 'flex',
-              alignItems: 'baseline',
+              alignItems: 'center',
               justifyContent: 'space-between',
               marginBottom: 14
             }}

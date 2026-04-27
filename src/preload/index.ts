@@ -13,10 +13,15 @@ const api = {
     closeSelf: (): Promise<void> => ipcRenderer.invoke(IpcChannels.WindowCloseSelf)
   },
   dev: {
-    resetData: (): Promise<void> => ipcRenderer.invoke(IpcChannels.DevResetData)
+    resetData: (): Promise<void> => ipcRenderer.invoke(IpcChannels.DevResetData),
+    testReminder: (): Promise<void> => ipcRenderer.invoke(IpcChannels.DevTestReminder)
   },
   tray: {
     resize: (height: number): Promise<void> => ipcRenderer.invoke(IpcChannels.TrayResize, height)
+  },
+  shell: {
+    openExternal: (url: string): Promise<void> =>
+      ipcRenderer.invoke(IpcChannels.ShellOpenExternal, url)
   },
   store: {
     getAll: (): Promise<PersistedState> => ipcRenderer.invoke(IpcChannels.StoreGetAll),

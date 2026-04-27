@@ -1,7 +1,7 @@
 {
-  "name": "daily",
+  "name": "volt",
   "version": "0.1.0",
-  "description": "Focus companion for Mac with morning ritual and manual time tracking",
+  "description": "Volt — Daily focus tracker for Mac",
   "main": "./out/main/index.js",
   "author": "Espen",
   "homepage": "",

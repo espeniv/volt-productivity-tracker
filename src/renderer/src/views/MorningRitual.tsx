@@ -5,6 +5,13 @@ import { Icon } from '../design/Icon'
 import { todayLong, fmtDuration, dateKey, nowWithOffset } from '../design/format'
 import { useT } from '../i18n/useT'
 import type { TranslationKey } from '../i18n/translations'
+
+function greetingKey(): TranslationKey {
+  const h = new Date().getHours()
+  if (h < 12) return 'good_morning'
+  if (h < 18) return 'good_afternoon'
+  return 'good_evening'
+}
 import type { DailyEntry } from '../../../shared/types'
 
 const W = 480
@@ -54,7 +61,7 @@ function FaceScale({
             style={{
               flex: 1,
               background: active ? 'var(--accent-soft)' : 'var(--bg-sunken)',
-              border: active ? '1.5px solid var(--accent)' : '0.5px solid var(--line)',
+              border: '0.5px solid var(--line)',
               borderRadius: 12,
               padding: '16px 8px',
               display: 'flex',
@@ -62,7 +69,8 @@ function FaceScale({
               alignItems: 'center',
               gap: 8,
               cursor: 'pointer',
-              transition: 'background 120ms, border-color 120ms'
+              boxShadow: active ? 'inset 0 0 0 1.5px var(--accent)' : 'none',
+              transition: 'background 120ms, box-shadow 120ms'
             }}
           >
             <span style={{ fontSize: 32, lineHeight: 1 }}>{opt.emoji}</span>
@@ -123,13 +131,23 @@ function StepShell({
   )
 }
 
-function RitualGreeting(): React.JSX.Element {
+function RitualIntro({
+  showYesterday,
+  yesterdayTotal,
+  rating,
+  onRate
+}: {
+  showYesterday: boolean
+  yesterdayTotal: number
+  rating: number | undefined
+  onRate: (v: number) => void
+}): React.JSX.Element {
   const t = useT()
   return (
     <div
       style={{
         height: '100%',
-        padding: '52px 48px 32px',
+        padding: '48px 48px 28px',
         display: 'flex',
         flexDirection: 'column'
       }}
@@ -140,7 +158,7 @@ function RitualGreeting(): React.JSX.Element {
           color: 'var(--ink-3)',
           textTransform: 'uppercase',
           letterSpacing: '0.12em',
-          marginBottom: 18,
+          marginBottom: 14,
           fontWeight: 500
         }}
         className="tnum"
@@ -150,72 +168,66 @@ function RitualGreeting(): React.JSX.Element {
       <div
         className="display"
         style={{
-          fontSize: 42,
+          fontSize: 38,
           lineHeight: 1.05,
           letterSpacing: '-0.025em',
           color: 'var(--ink)',
-          fontWeight: 600
+          fontWeight: 600,
+          marginBottom: showYesterday ? 28 : 0
         }}
       >
-        {t('good_morning')}.
-        <br />
-        <span style={{ color: 'var(--ink-3)', fontWeight: 500 }}>{t('give_what_you_got')}</span>
+        {t(greetingKey())}.
       </div>
-    </div>
-  )
-}
 
-function RitualYesterdayReview({
-  yesterdayTotal,
-  rating,
-  onRate
-}: {
-  yesterdayTotal: number
-  rating: number | undefined
-  onRate: (v: number) => void
-}): React.JSX.Element {
-  const t = useT()
-  return (
-    <StepShell title={t('yesterday_question')} subtitle={t('yesterday_subtitle')}>
-      <div
-        className="glass-2"
-        style={{
-          padding: 18,
-          borderRadius: 14,
-          border: '0.5px solid var(--line)',
-          marginBottom: 24
-        }}
-      >
-        <div
-          style={{
-            fontSize: 11,
-            color: 'var(--ink-3)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.08em',
-            marginBottom: 8,
-            fontWeight: 500
-          }}
-        >
-          {t('yesterday')}
-        </div>
-        {yesterdayTotal > 0 ? (
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
-            <span style={{ fontSize: 13, color: 'var(--ink-3)' }}>
-              {t('yesterday_focused_for')}
-            </span>
-            <span
-              className="display tnum"
-              style={{ fontSize: 28, color: 'var(--ink)', fontWeight: 600 }}
+      {showYesterday && (
+        <>
+          <div
+            className="glass-2"
+            style={{
+              padding: 16,
+              borderRadius: 14,
+              border: '0.5px solid var(--line)',
+              marginBottom: 20
+            }}
+          >
+            <div
+              style={{
+                fontSize: 11,
+                color: 'var(--ink-3)',
+                textTransform: 'uppercase',
+                letterSpacing: '0.08em',
+                marginBottom: 6,
+                fontWeight: 500
+              }}
             >
-              {fmtDuration(yesterdayTotal)}
-            </span>
+              {t('yesterday')}
+            </div>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
+              <span style={{ fontSize: 13, color: 'var(--ink-3)' }}>
+                {t('yesterday_focused_for')}
+              </span>
+              <span
+                className="display tnum"
+                style={{ fontSize: 26, color: 'var(--ink)', fontWeight: 600 }}
+              >
+                {fmtDuration(yesterdayTotal)}
+              </span>
+            </div>
           </div>
-        ) : (
-          <div style={{ fontSize: 14, color: 'var(--ink-2)' }}>{t('no_yesterday_data')}</div>
-        )}
-      </div>
-      <FaceScale value={rating} onChange={onRate} options={MOOD_OPTIONS} />
-    </StepShell>
+          <div
+            style={{
+              fontSize: 13,
+              color: 'var(--ink-3)',
+              lineHeight: 1.55,
+              marginBottom: 14
+            }}
+          >
+            {t('yesterday_question')}
+          </div>
+          <FaceScale value={rating} onChange={onRate} options={MOOD_OPTIONS} />
+        </>
+      )}
+    </div>
   )
 }
 
@@ -276,12 +288,22 @@ function RitualBrainDump({
           fontSize: 28,
           lineHeight: 1.2,
           color: 'var(--ink)',
-          marginBottom: 18,
+          marginBottom: 6,
           fontWeight: 600,
           letterSpacing: '-0.02em'
         }}
       >
         {t('daily_notes')}
+      </div>
+      <div
+        style={{
+          fontSize: 13,
+          color: 'var(--ink-3)',
+          lineHeight: 1.55,
+          marginBottom: 18
+        }}
+      >
+        {t('daily_notes_hint')}
       </div>
       <textarea
         ref={ref}
@@ -376,7 +398,7 @@ function RitualGoals({
       >
         {t('one_thing_today')}
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, flex: 1 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         {list.map((g, i) => (
           <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span
@@ -425,31 +447,39 @@ function RitualGoals({
             )}
           </div>
         ))}
+        <button
+          onClick={addBlank}
+          style={{
+            alignSelf: 'flex-start',
+            marginLeft: 13,
+            background: 'transparent',
+            border: 'none',
+            color: 'var(--ink-3)',
+            fontSize: 13,
+            fontWeight: 500,
+            padding: '4px 0',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            cursor: 'pointer',
+            opacity: 0.35,
+            transition: 'opacity 120ms ease'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.opacity = '0.75'
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.opacity = '0.35'
+          }}
+        >
+          <Icon name="plus" size={14} /> {t('add_goal')}
+        </button>
       </div>
-      <button
-        onClick={addBlank}
-        style={{
-          alignSelf: 'flex-start',
-          marginTop: 12,
-          background: 'transparent',
-          border: 'none',
-          color: 'var(--ink-3)',
-          fontSize: 13,
-          fontWeight: 500,
-          padding: '6px 0',
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: 6,
-          cursor: 'pointer'
-        }}
-      >
-        <Icon name="plus" size={14} /> {t('add_goal')}
-      </button>
     </div>
   )
 }
 
-type StepKey = 'greeting' | 'yesterday' | 'mood' | 'energy' | 'notes' | 'goals'
+type StepKey = 'intro' | 'mood' | 'energy' | 'notes' | 'goals'
 
 export function MorningRitual(): React.JSX.Element {
   const settings = useDailyStore((s) => s.settings)
@@ -480,12 +510,10 @@ export function MorningRitual(): React.JSX.Element {
   const [brainDump, setBrainDump] = useState(existing?.brainDump || '')
   const [goals, setGoals] = useState<string[]>(existing?.goals || [])
 
-  const stepKeys: StepKey[] = useMemo(() => {
-    const arr: StepKey[] = ['greeting']
-    if (showYesterday) arr.push('yesterday')
-    arr.push('mood', 'energy', 'notes', 'goals')
-    return arr
-  }, [showYesterday])
+  const stepKeys: StepKey[] = useMemo(
+    () => ['intro', 'mood', 'energy', 'notes', 'goals'],
+    []
+  )
   const total = stepKeys.length
 
   const [step, setStep] = useState(0)
@@ -537,7 +565,7 @@ export function MorningRitual(): React.JSX.Element {
   }
 
   const primaryLabel =
-    stepKey === 'greeting'
+    stepKey === 'intro'
       ? t('begin')
       : isLastStep
         ? t('start_the_day')
@@ -593,9 +621,9 @@ export function MorningRitual(): React.JSX.Element {
         </div>
 
         <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
-          {stepKey === 'greeting' && <RitualGreeting />}
-          {stepKey === 'yesterday' && (
-            <RitualYesterdayReview
+          {stepKey === 'intro' && (
+            <RitualIntro
+              showYesterday={showYesterday}
               yesterdayTotal={yesterdayTotal}
               rating={yesterdayRating}
               onRate={setYesterdayRating}

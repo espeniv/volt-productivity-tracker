@@ -15,10 +15,12 @@ function OnbWelcome(): React.JSX.Element {
         height: '100%',
         padding: '60px 48px 32px',
         display: 'flex',
-        flexDirection: 'column'
+        flexDirection: 'column',
+        alignItems: 'center',
+        textAlign: 'center'
       }}
     >
-      <Logo size={48} style={{ marginBottom: 28 }} title="Daily" />
+      <Logo size={48} style={{ marginBottom: 28 }} title="Volt" />
       <div
         className="display"
         style={{
@@ -160,6 +162,20 @@ function OnbMenuBar(): React.JSX.Element {
           </li>
         ))}
       </ul>
+      <div
+        className="glass-2"
+        style={{
+          marginTop: 22,
+          padding: '12px 14px',
+          borderRadius: 12,
+          border: '0.5px solid var(--line)',
+          fontSize: 13,
+          color: 'var(--ink-2)',
+          lineHeight: 1.5
+        }}
+      >
+        {t('onboarding_to_morning_hint')}
+      </div>
     </div>
   )
 }
@@ -177,6 +193,7 @@ export function Onboarding(): React.JSX.Element {
     const patch = { overarchingGoal: goal, onboarded: true }
     updateSettingsLocal(patch)
     await window.api.store.updateSettings(patch)
+    await window.api.openMorningRitual()
     window.api.window.closeSelf()
   }
 

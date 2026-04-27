@@ -14,7 +14,9 @@ export const IpcChannels = {
   WindowOpenMorning: 'window:open-morning',
   WindowCloseSelf: 'window:close-self',
   DevResetData: 'dev:reset-data',
-  TrayResize: 'tray:resize'
+  TrayResize: 'tray:resize',
+  ShellOpenExternal: 'shell:open-external',
+  DevTestReminder: 'dev:test-reminder'
 } as const
 
 export type IpcChannel = (typeof IpcChannels)[keyof typeof IpcChannels]

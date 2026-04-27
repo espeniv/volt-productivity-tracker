@@ -284,13 +284,34 @@ export function SettingsTab(): React.JSX.Element {
         </SettingsRow>
       </SettingsGroup>
 
+      <SettingsGroup title={t('suggestions_title')} subtitle={t('suggestions_sub')}>
+        <button
+          onClick={() => window.api.shell.openExternal('mailto:volt@espeniv.com')}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8,
+            background: 'transparent',
+            border: '0.5px solid var(--line-strong)',
+            color: 'var(--ink)',
+            padding: '8px 14px',
+            borderRadius: 8,
+            fontSize: 13,
+            fontWeight: 500,
+            cursor: 'pointer'
+          }}
+        >
+          {t('send_feedback')} <span style={{ color: 'var(--ink-3)' }}>· volt@espeniv.com</span>
+        </button>
+      </SettingsGroup>
+
       <SettingsGroup
         title="Developer"
         subtitle="Wipes all sessions, entries and settings, then relaunches."
       >
         <button
           onClick={() => {
-            if (confirm('Reset all Daily data? This cannot be undone.')) {
+            if (confirm('Reset all Volt data? This cannot be undone.')) {
               window.api.dev.resetData()
             }
           }}
@@ -347,6 +368,21 @@ export function SettingsTab(): React.JSX.Element {
           >
             Go back 1 day
           </button>
+          <button
+            onClick={() => window.api.dev.testReminder()}
+            style={{
+              background: 'transparent',
+              border: '0.5px solid var(--line-strong)',
+              color: 'var(--ink-2)',
+              padding: '8px 14px',
+              borderRadius: 8,
+              fontSize: 13,
+              fontWeight: 500,
+              cursor: 'pointer'
+            }}
+          >
+            Test reminder now
+          </button>
           {settings.devDayOffset !== 0 && (
             <button
               onClick={() => save({ devDayOffset: 0 })}
@@ -381,7 +417,7 @@ export function SettingsTab(): React.JSX.Element {
           gap: 8
         }}
       >
-        <Logo size={28} title="Daily" />
+        <Logo size={28} title="Volt" />
         <div
           style={{
             fontSize: 11,

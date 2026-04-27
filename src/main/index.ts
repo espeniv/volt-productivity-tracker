@@ -8,9 +8,10 @@ import { getTimerState, initTimer, stopTimer } from './timer/timer'
 import { initPowerMonitor } from './power/power'
 import { applySettingsSideEffects, registerIpcHandlers } from './ipc/ipc'
 import { initAutoUpdater } from './updater/updater'
+import { initMorningReminder } from './notifications/morning-reminder'
 
 app.whenReady().then(() => {
-  electronApp.setAppUserModelId('com.daily.app')
+  electronApp.setAppUserModelId('com.voltapp.app')
 
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
@@ -32,6 +33,7 @@ app.whenReady().then(() => {
   }
 
   initAutoUpdater()
+  initMorningReminder()
 })
 
 app.on('window-all-closed', () => {

@@ -14,12 +14,12 @@ function loadImage(path: string): Electron.NativeImage {
 
 export function createTray(): Tray {
   tray = new Tray(loadImage(iconPath))
-  tray.setToolTip('Daily')
+  tray.setToolTip('Volt')
 
   tray.on('click', (_event, bounds) => toggleTrayWindow(bounds))
   tray.on('right-click', () => {
     const menu = Menu.buildFromTemplate([
-      { label: 'Open Daily', click: () => showMainWindow() },
+      { label: 'Open Volt', click: () => showMainWindow() },
       { type: 'separator' },
       { role: 'quit' }
     ])

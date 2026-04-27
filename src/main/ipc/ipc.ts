@@ -1,10 +1,11 @@
-import { app, BrowserWindow, ipcMain } from 'electron'
+import { app, BrowserWindow, ipcMain, shell } from 'electron'
 import { IpcChannels } from '../../shared/ipc-channels'
 import { showMainWindow } from '../windows/main-window'
 import { getTrayWindow, toggleTrayWindow } from '../windows/tray-window'
 import { getTray } from '../tray/tray'
 import { showFloatingWindow } from '../windows/floating-window'
 import { getState, resetAll, updateSettings, upsertEntry } from '../store/store'
+import { testMorningReminder } from '../notifications/morning-reminder'
 import { pauseTimer, resumeTimer, startTimer, stopTimer } from '../timer/timer'
 import type { DailyEntry, Settings } from '../../shared/types'
 
@@ -57,12 +58,22 @@ export function registerIpcHandlers(): void {
     return next
   })
 
+  ipcMain.handle(IpcChannels.ShellOpenExternal, (_e, url: string) => {
+    if (typeof url !== 'string') return
+    if (!/^(https?:|mailto:)/i.test(url)) return
+    shell.openExternal(url)
+  })
+
   ipcMain.handle(IpcChannels.TrayResize, (_e, height: number) => {
     const win = getTrayWindow()
     if (!win) return
     const [w] = win.getSize()
     const clamped = Math.max(120, Math.min(800, Math.round(height)))
     win.setSize(w, clamped, false)
+  })
+
+  ipcMain.handle(IpcChannels.DevTestReminder, () => {
+    testMorningReminder()
   })
 
   ipcMain.handle(IpcChannels.DevResetData, () => {

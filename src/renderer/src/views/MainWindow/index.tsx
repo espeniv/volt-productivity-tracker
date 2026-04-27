@@ -68,7 +68,7 @@ export function MainWindow(): React.JSX.Element {
                   borderRadius: 8,
                   fontSize: 13,
                   color: active ? 'var(--ink)' : 'var(--ink-3)',
-                  fontWeight: active ? 500 : 400,
+                  fontWeight: 500,
                   textTransform: 'capitalize',
                   display: 'inline-flex',
                   alignItems: 'center',
