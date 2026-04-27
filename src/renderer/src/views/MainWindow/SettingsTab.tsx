@@ -305,6 +305,7 @@ export function SettingsTab(): React.JSX.Element {
         </button>
       </SettingsGroup>
 
+      {import.meta.env.DEV && (
       <SettingsGroup
         title="Developer"
         subtitle="Wipes all sessions, entries and settings, then relaunches."
@@ -407,6 +408,7 @@ export function SettingsTab(): React.JSX.Element {
           </span>
         </div>
       </SettingsGroup>
+      )}
 
       <div
         style={{

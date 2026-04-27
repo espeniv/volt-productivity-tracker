@@ -20,6 +20,17 @@ mac:
         - x64
   entitlementsInherit: build/entitlements.mac.plist
   notarize: false
+  extendInfo:
+    # Make the packaged app a true menu-bar agent: no dock icon by default,
+    # no Cmd+Tab entry. `app.dock.show()` can still surface the icon at
+    # runtime when the user toggles "Hide app icon in dock" off, and we
+    # use it during first-run onboarding so the app is discoverable.
+    LSUIElement: true
+  # Skip code signing for local/personal builds. macOS will require a right-click
+  # → Open the first time you launch the unsigned .app. Set this to your real
+  # Developer ID identity ("Developer ID Application: Your Name (TEAMID)") when
+  # you're ready to ship a signed + notarized DMG.
+  identity: null
 dmg:
   artifactName: Volt-${version}-${arch}.${ext}
 npmRebuild: false

@@ -28,6 +28,7 @@ app.whenReady().then(() => {
   createTray()
 
   if (!settings.onboarded) {
+    // First-run onboarding deserves a dock icon so the user can see the app exists.
     if (process.platform === 'darwin') app.dock?.show()
     showFloatingWindow('onboarding')
   }

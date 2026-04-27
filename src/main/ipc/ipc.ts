@@ -11,7 +11,8 @@ import type { DailyEntry, Settings } from '../../shared/types'
 
 export function registerIpcHandlers(): void {
   ipcMain.handle(IpcChannels.WindowShowMain, () => {
-    if (process.platform === 'darwin') app.dock?.show()
+    // Don't force dock visibility here — `applySettingsSideEffects` is the single
+    // source of truth based on the user's hideDock preference.
     showMainWindow()
   })
 
@@ -31,12 +32,14 @@ export function registerIpcHandlers(): void {
   })
 
   ipcMain.handle(IpcChannels.WindowOpenOnboarding, () => {
-    if (process.platform === 'darwin') app.dock?.show()
+    // Don't force dock visibility here — `applySettingsSideEffects` is the single
+    // source of truth based on the user's hideDock preference.
     showFloatingWindow('onboarding')
   })
 
   ipcMain.handle(IpcChannels.WindowOpenMorning, () => {
-    if (process.platform === 'darwin') app.dock?.show()
+    // Don't force dock visibility here — `applySettingsSideEffects` is the single
+    // source of truth based on the user's hideDock preference.
     showFloatingWindow('morning')
   })
 

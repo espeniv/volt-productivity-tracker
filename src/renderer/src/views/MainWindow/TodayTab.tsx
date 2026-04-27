@@ -191,20 +191,22 @@ export function TodayTab(): React.JSX.Element {
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: 8,
+              gap: 14,
               marginLeft: 'auto',
               fontSize: 13,
               color: 'var(--ink-3)'
             }}
           >
             {entry.mood && (
-              <span title={t('mood_label')} style={{ display: 'inline-flex', gap: 4, alignItems: 'center' }}>
+              <span style={{ display: 'inline-flex', gap: 6, alignItems: 'center' }}>
                 <span style={{ fontSize: 18 }}>{MOOD_EMOJI[entry.mood]}</span>
+                <span>{t('mood_label')}</span>
               </span>
             )}
             {entry.energy && (
-              <span title={t('energy_label')} style={{ display: 'inline-flex', gap: 4, alignItems: 'center' }}>
+              <span style={{ display: 'inline-flex', gap: 6, alignItems: 'center' }}>
                 <span style={{ fontSize: 18 }}>{ENERGY_EMOJI[entry.energy]}</span>
+                <span>{t('energy_label')}</span>
               </span>
             )}
           </div>

@@ -9,7 +9,7 @@ interface Props {
 }
 
 /**
- * Daily logo — a tilted lightning bolt inside a rounded-square accent tile.
+ * Volt logo — a blue lightning bolt on a soft tile.
  * Use `monochrome` for inline UI marks where the surrounding context already
  * sets the color (settings footer, etc).
  */
@@ -39,22 +39,32 @@ export function Logo({ size = 32, monochrome, style, title }: Props): React.JSX.
       role={title ? 'img' : undefined}
     >
       <defs>
-        <linearGradient id="dailyLogoBg" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#7AB3E0" />
-          <stop offset="1" stopColor="#3F73A8" />
+        <linearGradient id="voltLogoTile" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#3A3A3D" />
+          <stop offset="1" stopColor="#1F1F22" />
         </linearGradient>
-        <radialGradient id="dailyLogoGlow" cx="0.5" cy="0.38" r="0.55">
-          <stop offset="0" stopColor="#FFFFFF" stopOpacity="0.22" />
+        <linearGradient id="voltLogoBolt" x1="0.2" y1="0" x2="0.85" y2="1">
+          <stop offset="0" stopColor="#A8DCFF" />
+          <stop offset="0.55" stopColor="#5DA8F0" />
+          <stop offset="1" stopColor="#3D7FCF" />
+        </linearGradient>
+        <linearGradient id="voltLogoShine" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#FFFFFF" stopOpacity="0.55" />
           <stop offset="1" stopColor="#FFFFFF" stopOpacity="0" />
-        </radialGradient>
+        </linearGradient>
       </defs>
-      <rect x="0" y="0" width="24" height="24" rx="5.25" ry="5.25" fill="url(#dailyLogoBg)" />
-      <rect x="0" y="0" width="24" height="24" rx="5.25" ry="5.25" fill="url(#dailyLogoGlow)" />
+      <rect x="0" y="0" width="24" height="24" rx="5.25" ry="5.25" fill="url(#voltLogoTile)" />
       <path
         d="M 14 4 L 4.6 14 L 11 14 L 10 20 L 19.4 10 L 13 10 Z"
-        fill="#FFFFFF"
-        stroke="#FFFFFF"
-        strokeWidth="0.4"
+        fill="url(#voltLogoBolt)"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M 13.6 4.6 L 5.4 13.5 L 10.2 13.5"
+        fill="none"
+        stroke="url(#voltLogoShine)"
+        strokeWidth="0.7"
+        strokeLinecap="round"
         strokeLinejoin="round"
       />
     </svg>
