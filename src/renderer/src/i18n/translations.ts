@@ -20,10 +20,6 @@ export const translations = {
   pause: { en: 'Pause', no: 'Pause' },
   resume: { en: 'Resume', no: 'Fortsett' },
   end_session: { en: 'End session', no: 'Avslutt økt' },
-  end_session_help: {
-    en: 'Pause for short breaks. End to log this session.',
-    no: 'Sett på pause for korte avbrekk. Avslutt for å loggføre økten.'
-  },
   working_toward: { en: 'Working toward', no: 'Jobber mot' },
   open_app: { en: 'Open app', no: 'Åpne app' },
   start_session: { en: 'Start a session', no: 'Start en økt' },
@@ -32,7 +28,7 @@ export const translations = {
   check_in: { en: 'Check-in', no: 'Innsjekk' },
   of: { en: 'of', no: 'av' },
   on_word: { en: 'on', no: 'på' },
-  give_what_you_got: { en: 'Give it what you got.', no: 'Gi det du har.' },
+  give_what_you_got: { en: 'Show up and give it what you got.', no: 'Møt opp og gi det alt du kan.' },
   daily_notes: { en: 'Daily notes', no: 'Dagens notater' },
   daily_notes_long: {
     en: 'A daily journal for brain dumps, ideas, or anything you want to remember. Worries, what you slept badly about, plans for the day. Write it down so it stops following you around.',
@@ -57,6 +53,40 @@ export const translations = {
   mood_okay: { en: 'Okay', no: 'Greit' },
   mood_good: { en: 'Good', no: 'Bra' },
   mood_great: { en: 'Great', no: 'Strålende' },
+  energy_question: { en: "How's your energy?", no: 'Hvordan er energien?' },
+  energy_subtitle: {
+    en: 'A quick check-in with your battery.',
+    no: 'En rask sjekk av batteriet.'
+  },
+  energy_drained: { en: 'Drained', no: 'Tappet' },
+  energy_low: { en: 'Low', no: 'Lavt' },
+  energy_okay: { en: 'Okay', no: 'Greit' },
+  energy_good: { en: 'Good', no: 'Bra' },
+  energy_high: { en: 'Energized', no: 'Energisk' },
+  yesterday_question: { en: 'How was yesterday?', no: 'Hvordan var i går?' },
+  yesterday_subtitle: {
+    en: 'Look back briefly before stepping into today.',
+    no: 'Se kort tilbake før du går inn i dagen.'
+  },
+  yesterday_focused_for: { en: 'You focused for', no: 'Du fokuserte i' },
+  no_yesterday_data: {
+    en: 'No focus time yesterday.',
+    no: 'Ingen fokustid i går.'
+  },
+  add_goal: { en: 'Add goal', no: 'Legg til mål' },
+  goals_label: { en: 'Goals for today', no: 'Mål for i dag' },
+  morning_not_done_title: {
+    en: 'Start with the morning check-in',
+    no: 'Begynn med morgensjekken'
+  },
+  morning_not_done_sub: {
+    en: 'Set the day before tracking time on it.',
+    no: 'Sett dagen før du sporer tid på den.'
+  },
+  start_check_in: { en: 'Start check-in', no: 'Start innsjekk' },
+  mood_label: { en: 'Mood', no: 'Humør' },
+  energy_label: { en: 'Energy', no: 'Energi' },
+  rating_label: { en: 'Rating', no: 'Vurdering' },
 
   // Onboarding
   welcome_to_daily: { en: 'Welcome to Daily', no: 'Velkommen til Daily' },
@@ -83,8 +113,8 @@ export const translations = {
     no: 'Eksempler: Lanser sideprosjektet · Lær spansk til B1 · Fullfør romanmanuset'
   },
   overarching_placeholder: {
-    en: 'Submit dissertation by August',
-    no: 'Lever avhandlingen innen august'
+    en: 'Your long-term goal',
+    no: 'Det langsiktige målet ditt'
   },
   menu_bar_lives_here: {
     en: 'Daily lives in your menu bar.',

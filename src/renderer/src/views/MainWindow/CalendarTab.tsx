@@ -3,6 +3,9 @@ import { useDailyStore } from '../../store/useDailyStore'
 import { Icon } from '../../design/Icon'
 import { fmtDuration, fmtTimeOfDay, dateKey, nowWithOffset } from '../../design/format'
 import { useT } from '../../i18n/useT'
+
+const MOOD_EMOJI: Record<number, string> = { 1: '☹️', 2: '🙁', 3: '😐', 4: '🙂', 5: '😊' }
+const ENERGY_EMOJI: Record<number, string> = { 1: '🪫', 2: '😴', 3: '😌', 4: '🙂', 5: '⚡' }
 import type { Session } from '../../../../shared/types'
 
 function pad2(n: number): string {
@@ -290,10 +293,13 @@ export function CalendarTab(): React.JSX.Element {
                 year: 'numeric'
               })}
         </div>
-        {selEntry?.mainGoal ? (
+        {selEntry?.goals && selEntry.goals.length > 0 ? (
           <div
             className="display"
             style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 4,
               fontSize: 22,
               color: 'var(--ink)',
               lineHeight: 1.25,
@@ -302,7 +308,9 @@ export function CalendarTab(): React.JSX.Element {
               fontWeight: 600
             }}
           >
-            {selEntry.mainGoal}
+            {selEntry.goals.map((g, i) => (
+              <span key={i}>{g}</span>
+            ))}
           </div>
         ) : (
           <div
@@ -315,6 +323,38 @@ export function CalendarTab(): React.JSX.Element {
             }}
           >
             {selSessions.length === 0 ? t('a_quiet_day') : t('no_goal_logged')}
+          </div>
+        )}
+
+        {(selEntry?.mood || selEntry?.energy || selEntry?.dayRating) && (
+          <div
+            style={{
+              display: 'flex',
+              gap: 14,
+              marginBottom: 18,
+              fontSize: 13,
+              color: 'var(--ink-3)',
+              alignItems: 'center'
+            }}
+          >
+            {selEntry?.mood && (
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ fontSize: 18 }}>{MOOD_EMOJI[selEntry.mood]}</span>
+                <span>{t('mood_label')}</span>
+              </span>
+            )}
+            {selEntry?.energy && (
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ fontSize: 18 }}>{ENERGY_EMOJI[selEntry.energy]}</span>
+                <span>{t('energy_label')}</span>
+              </span>
+            )}
+            {selEntry?.dayRating && (
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ fontSize: 18 }}>{MOOD_EMOJI[selEntry.dayRating]}</span>
+                <span>{t('rating_label')}</span>
+              </span>
+            )}
           </div>
         )}
 

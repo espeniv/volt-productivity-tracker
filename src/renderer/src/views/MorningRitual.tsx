@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useDailyStore } from '../store/useDailyStore'
 import { PrimaryButton, GhostButton } from '../design/Buttons'
+import { Icon } from '../design/Icon'
 import { todayLong, fmtDuration, dateKey, nowWithOffset } from '../design/format'
 import { useT } from '../i18n/useT'
 import type { TranslationKey } from '../i18n/translations'
@@ -9,13 +10,120 @@ import type { DailyEntry } from '../../../shared/types'
 const W = 480
 const H = 600
 
-function RitualGreeting({
-  yesterdayTotal,
-  yesterdayGoal
+const MOOD_OPTIONS: Array<{ value: number; emoji: string; key: TranslationKey }> = [
+  { value: 1, emoji: '☹️', key: 'mood_terrible' },
+  { value: 2, emoji: '🙁', key: 'mood_low' },
+  { value: 3, emoji: '😐', key: 'mood_okay' },
+  { value: 4, emoji: '🙂', key: 'mood_good' },
+  { value: 5, emoji: '😊', key: 'mood_great' }
+]
+
+const ENERGY_OPTIONS: Array<{ value: number; emoji: string; key: TranslationKey }> = [
+  { value: 1, emoji: '🪫', key: 'energy_drained' },
+  { value: 2, emoji: '😴', key: 'energy_low' },
+  { value: 3, emoji: '😌', key: 'energy_okay' },
+  { value: 4, emoji: '🙂', key: 'energy_good' },
+  { value: 5, emoji: '⚡', key: 'energy_high' }
+]
+
+function FaceScale({
+  value,
+  onChange,
+  options
 }: {
-  yesterdayTotal: number
-  yesterdayGoal: string
+  value: number | undefined
+  onChange: (v: number) => void
+  options: typeof MOOD_OPTIONS
 }): React.JSX.Element {
+  const t = useT()
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'stretch',
+        justifyContent: 'space-between',
+        gap: 8
+      }}
+    >
+      {options.map((opt) => {
+        const active = value === opt.value
+        return (
+          <button
+            key={opt.value}
+            onClick={() => onChange(opt.value)}
+            style={{
+              flex: 1,
+              background: active ? 'var(--accent-soft)' : 'var(--bg-sunken)',
+              border: active ? '1.5px solid var(--accent)' : '0.5px solid var(--line)',
+              borderRadius: 12,
+              padding: '16px 8px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 8,
+              cursor: 'pointer',
+              transition: 'background 120ms, border-color 120ms'
+            }}
+          >
+            <span style={{ fontSize: 32, lineHeight: 1 }}>{opt.emoji}</span>
+            <span
+              style={{
+                fontSize: 11,
+                color: active ? 'var(--ink)' : 'var(--ink-3)',
+                fontWeight: active ? 500 : 400
+              }}
+            >
+              {t(opt.key)}
+            </span>
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
+function StepShell({
+  title,
+  subtitle,
+  children
+}: {
+  title: string
+  subtitle?: string
+  children: React.ReactNode
+}): React.JSX.Element {
+  return (
+    <div
+      style={{
+        height: '100%',
+        padding: '48px 48px 24px',
+        display: 'flex',
+        flexDirection: 'column'
+      }}
+    >
+      <div
+        className="display"
+        style={{
+          fontSize: 28,
+          lineHeight: 1.2,
+          color: 'var(--ink)',
+          marginBottom: subtitle ? 8 : 28,
+          fontWeight: 600,
+          letterSpacing: '-0.02em'
+        }}
+      >
+        {title}
+      </div>
+      {subtitle && (
+        <div style={{ fontSize: 13.5, color: 'var(--ink-3)', lineHeight: 1.55, marginBottom: 28 }}>
+          {subtitle}
+        </div>
+      )}
+      {children}
+    </div>
+  )
+}
+
+function RitualGreeting(): React.JSX.Element {
   const t = useT()
   return (
     <div
@@ -53,53 +161,63 @@ function RitualGreeting({
         <br />
         <span style={{ color: 'var(--ink-3)', fontWeight: 500 }}>{t('give_what_you_got')}</span>
       </div>
+    </div>
+  )
+}
 
-      <div style={{ flex: 1 }} />
-
-      {yesterdayTotal > 0 && (
+function RitualYesterdayReview({
+  yesterdayTotal,
+  rating,
+  onRate
+}: {
+  yesterdayTotal: number
+  rating: number | undefined
+  onRate: (v: number) => void
+}): React.JSX.Element {
+  const t = useT()
+  return (
+    <StepShell title={t('yesterday_question')} subtitle={t('yesterday_subtitle')}>
+      <div
+        className="glass-2"
+        style={{
+          padding: 18,
+          borderRadius: 14,
+          border: '0.5px solid var(--line)',
+          marginBottom: 24
+        }}
+      >
         <div
-          className="glass-2"
-          style={{ padding: 18, borderRadius: 14, border: '0.5px solid var(--line)' }}
+          style={{
+            fontSize: 11,
+            color: 'var(--ink-3)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.08em',
+            marginBottom: 8,
+            fontWeight: 500
+          }}
         >
-          <div
-            style={{
-              fontSize: 11,
-              color: 'var(--ink-3)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.08em',
-              marginBottom: 8,
-              fontWeight: 500
-            }}
-          >
-            {t('yesterday')}
-          </div>
+          {t('yesterday')}
+        </div>
+        {yesterdayTotal > 0 ? (
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
+            <span style={{ fontSize: 13, color: 'var(--ink-3)' }}>
+              {t('yesterday_focused_for')}
+            </span>
             <span
               className="display tnum"
               style={{ fontSize: 28, color: 'var(--ink)', fontWeight: 600 }}
             >
               {fmtDuration(yesterdayTotal)}
             </span>
-            {yesterdayGoal && (
-              <span style={{ fontSize: 13, color: 'var(--ink-3)', lineHeight: 1.5 }}>
-                {t('on_word')}{' '}
-                <span style={{ color: 'var(--ink-2)', fontWeight: 500 }}>{yesterdayGoal}</span>
-              </span>
-            )}
           </div>
-        </div>
-      )}
-    </div>
+        ) : (
+          <div style={{ fontSize: 14, color: 'var(--ink-2)' }}>{t('no_yesterday_data')}</div>
+        )}
+      </div>
+      <FaceScale value={rating} onChange={onRate} options={MOOD_OPTIONS} />
+    </StepShell>
   )
 }
-
-const MOOD_OPTIONS: Array<{ value: number; emoji: string; key: TranslationKey }> = [
-  { value: 1, emoji: '☹️', key: 'mood_terrible' },
-  { value: 2, emoji: '🙁', key: 'mood_low' },
-  { value: 3, emoji: '😐', key: 'mood_okay' },
-  { value: 4, emoji: '🙂', key: 'mood_good' },
-  { value: 5, emoji: '😊', key: 'mood_great' }
-]
 
 function RitualMood({
   value,
@@ -110,73 +228,24 @@ function RitualMood({
 }): React.JSX.Element {
   const t = useT()
   return (
-    <div
-      style={{
-        height: '100%',
-        padding: '48px 48px 24px',
-        display: 'flex',
-        flexDirection: 'column'
-      }}
-    >
-      <div
-        className="display"
-        style={{
-          fontSize: 28,
-          lineHeight: 1.2,
-          color: 'var(--ink)',
-          marginBottom: 8,
-          fontWeight: 600,
-          letterSpacing: '-0.02em'
-        }}
-      >
-        {t('mood_question')}
-      </div>
-      <div style={{ fontSize: 13.5, color: 'var(--ink-3)', lineHeight: 1.55, marginBottom: 28 }}>
-        {t('mood_subtitle')}
-      </div>
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'stretch',
-          justifyContent: 'space-between',
-          gap: 8
-        }}
-      >
-        {MOOD_OPTIONS.map((opt) => {
-          const active = value === opt.value
-          return (
-            <button
-              key={opt.value}
-              onClick={() => onChange(opt.value)}
-              style={{
-                flex: 1,
-                background: active ? 'var(--accent-soft)' : 'var(--bg-sunken)',
-                border: active ? '1.5px solid var(--accent)' : '0.5px solid var(--line)',
-                borderRadius: 12,
-                padding: '16px 8px',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: 8,
-                cursor: 'pointer',
-                transition: 'background 120ms, border-color 120ms'
-              }}
-            >
-              <span style={{ fontSize: 32, lineHeight: 1 }}>{opt.emoji}</span>
-              <span
-                style={{
-                  fontSize: 11,
-                  color: active ? 'var(--ink)' : 'var(--ink-3)',
-                  fontWeight: active ? 500 : 400
-                }}
-              >
-                {t(opt.key)}
-              </span>
-            </button>
-          )
-        })}
-      </div>
-    </div>
+    <StepShell title={t('mood_question')} subtitle={t('mood_subtitle')}>
+      <FaceScale value={value} onChange={onChange} options={MOOD_OPTIONS} />
+    </StepShell>
+  )
+}
+
+function RitualEnergy({
+  value,
+  onChange
+}: {
+  value: number | undefined
+  onChange: (v: number) => void
+}): React.JSX.Element {
+  const t = useT()
+  return (
+    <StepShell title={t('energy_question')} subtitle={t('energy_subtitle')}>
+      <FaceScale value={value} onChange={onChange} options={ENERGY_OPTIONS} />
+    </StepShell>
   )
 }
 
@@ -207,14 +276,13 @@ function RitualBrainDump({
           fontSize: 28,
           lineHeight: 1.2,
           color: 'var(--ink)',
-          marginBottom: 8,
+          marginBottom: 18,
           fontWeight: 600,
           letterSpacing: '-0.02em'
         }}
       >
         {t('daily_notes')}
       </div>
-      <div style={{ marginBottom: 18 }} />
       <textarea
         ref={ref}
         value={value}
@@ -239,25 +307,39 @@ function RitualBrainDump({
   )
 }
 
-function RitualMainGoal({
-  value,
+function RitualGoals({
+  goals,
   onChange,
   overarchingGoal
 }: {
-  value: string
-  onChange: (v: string) => void
+  goals: string[]
+  onChange: (g: string[]) => void
   overarchingGoal: string
 }): React.JSX.Element {
   const t = useT()
-  const ref = useRef<HTMLInputElement | null>(null)
+  const list = goals.length === 0 ? [''] : goals
+  const lastRef = useRef<HTMLInputElement | null>(null)
   useEffect(() => {
-    ref.current?.focus()
-  }, [])
+    lastRef.current?.focus()
+  }, [list.length])
+
+  const setAt = (i: number, v: string): void => {
+    const next = list.slice()
+    next[i] = v
+    onChange(next.filter((s, idx) => idx === next.length - 1 || s.trim().length > 0))
+  }
+  const removeAt = (i: number): void => {
+    onChange(list.filter((_, idx) => idx !== i))
+  }
+  const addBlank = (): void => {
+    onChange([...list, ''])
+  }
+
   return (
     <div
       style={{
         height: '100%',
-        padding: '48px 48px 24px',
+        padding: '40px 48px 24px',
         display: 'flex',
         flexDirection: 'column'
       }}
@@ -276,7 +358,7 @@ function RitualMainGoal({
           >
             {t('working_toward')}
           </div>
-          <div style={{ fontSize: 14, color: 'var(--ink-2)', lineHeight: 1.45, marginBottom: 32 }}>
+          <div style={{ fontSize: 14, color: 'var(--ink-2)', lineHeight: 1.45, marginBottom: 24 }}>
             {overarchingGoal}
           </div>
         </>
@@ -284,38 +366,90 @@ function RitualMainGoal({
       <div
         className="display"
         style={{
-          fontSize: 28,
+          fontSize: 26,
           lineHeight: 1.2,
           color: 'var(--ink)',
-          marginBottom: 18,
+          marginBottom: 16,
           fontWeight: 600,
           letterSpacing: '-0.02em'
         }}
       >
         {t('one_thing_today')}
       </div>
-      <input
-        ref={ref}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="focus-ring display"
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, flex: 1 }}>
+        {list.map((g, i) => (
+          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span
+              style={{
+                width: 5,
+                height: 5,
+                borderRadius: '50%',
+                background: 'var(--accent)',
+                flexShrink: 0
+              }}
+            />
+            <input
+              ref={i === list.length - 1 ? lastRef : null}
+              value={g}
+              onChange={(e) => setAt(i, e.target.value)}
+              className="focus-ring display"
+              style={{
+                flex: 1,
+                background: 'transparent',
+                border: 'none',
+                outline: 'none',
+                borderBottom: '1px solid var(--line-strong)',
+                fontSize: 18,
+                lineHeight: 1.4,
+                padding: '6px 0',
+                color: 'var(--ink)',
+                fontWeight: 500,
+                letterSpacing: '-0.01em'
+              }}
+            />
+            {list.length > 1 && (
+              <button
+                onClick={() => removeAt(i)}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: 'var(--ink-4)',
+                  padding: 4,
+                  cursor: 'pointer',
+                  display: 'inline-flex'
+                }}
+                aria-label="Remove"
+              >
+                <Icon name="x" size={14} />
+              </button>
+            )}
+          </div>
+        ))}
+      </div>
+      <button
+        onClick={addBlank}
         style={{
-          width: '100%',
+          alignSelf: 'flex-start',
+          marginTop: 12,
           background: 'transparent',
           border: 'none',
-          outline: 'none',
-          borderBottom: '1.5px solid var(--accent)',
-          fontSize: 22,
-          lineHeight: 1.4,
-          padding: '8px 0',
-          color: 'var(--ink)',
+          color: 'var(--ink-3)',
+          fontSize: 13,
           fontWeight: 500,
-          letterSpacing: '-0.015em'
+          padding: '6px 0',
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 6,
+          cursor: 'pointer'
         }}
-      />
+      >
+        <Icon name="plus" size={14} /> {t('add_goal')}
+      </button>
     </div>
   )
 }
+
+type StepKey = 'greeting' | 'yesterday' | 'mood' | 'energy' | 'notes' | 'goals'
 
 export function MorningRitual(): React.JSX.Element {
   const settings = useDailyStore((s) => s.settings)
@@ -335,33 +469,67 @@ export function MorningRitual(): React.JSX.Element {
         .reduce((acc, s) => acc + s.duration, 0),
     [sessions, yesterday]
   )
+  const showYesterday = yesterdayTotal > 0 || !!yesterdayEntry
 
   const existing = entries[today]
-  const [step, setStep] = useState(0)
   const [mood, setMood] = useState<number | undefined>(existing?.mood)
+  const [energy, setEnergy] = useState<number | undefined>(existing?.energy)
+  const [yesterdayRating, setYesterdayRating] = useState<number | undefined>(
+    yesterdayEntry?.dayRating
+  )
   const [brainDump, setBrainDump] = useState(existing?.brainDump || '')
-  const [mainGoal, setMainGoal] = useState(existing?.mainGoal || '')
-  const total = 4
+  const [goals, setGoals] = useState<string[]>(existing?.goals || [])
+
+  const stepKeys: StepKey[] = useMemo(() => {
+    const arr: StepKey[] = ['greeting']
+    if (showYesterday) arr.push('yesterday')
+    arr.push('mood', 'energy', 'notes', 'goals')
+    return arr
+  }, [showYesterday])
+  const total = stepKeys.length
+
+  const [step, setStep] = useState(0)
+  const stepKey = stepKeys[step]
 
   const finish = async (): Promise<void> => {
+    const cleanedGoals = goals.map((g) => g.trim()).filter(Boolean)
     const next: DailyEntry = {
       date: today,
-      mainGoal,
+      goals: cleanedGoals,
       brainDump,
       sessions: existing?.sessions || [],
-      mood
+      mood,
+      energy,
+      dayRating: existing?.dayRating
     }
     upsertEntry(next)
     await window.api.store.updateEntry(next)
+
+    if (showYesterday && yesterdayRating !== undefined) {
+      const yEntry: DailyEntry = yesterdayEntry
+        ? { ...yesterdayEntry, dayRating: yesterdayRating }
+        : {
+            date: yesterday,
+            goals: [],
+            brainDump: '',
+            sessions: [],
+            dayRating: yesterdayRating
+          }
+      upsertEntry(yEntry)
+      await window.api.store.updateEntry(yEntry)
+    }
+
     await window.api.showTrayWindow()
     window.api.window.closeSelf()
   }
 
   const isLastStep = step === total - 1
-  // Last step requires a main goal; mood step requires a selection
-  const canAdvance =
-    (step === 1 && mood === undefined) ? false :
-    (isLastStep ? mainGoal.trim().length > 0 : true)
+  const canAdvance = (() => {
+    if (stepKey === 'mood') return mood !== undefined
+    if (stepKey === 'energy') return energy !== undefined
+    if (stepKey === 'goals') return goals.some((g) => g.trim().length > 0)
+    return true
+  })()
 
   const handlePrimary = (): void => {
     if (isLastStep) finish()
@@ -369,9 +537,9 @@ export function MorningRitual(): React.JSX.Element {
   }
 
   const primaryLabel =
-    step === 0
+    stepKey === 'greeting'
       ? t('begin')
-      : step === total - 1
+      : isLastStep
         ? t('start_the_day')
         : t('continue_label')
 
@@ -425,18 +593,21 @@ export function MorningRitual(): React.JSX.Element {
         </div>
 
         <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
-          {step === 0 && (
-            <RitualGreeting
+          {stepKey === 'greeting' && <RitualGreeting />}
+          {stepKey === 'yesterday' && (
+            <RitualYesterdayReview
               yesterdayTotal={yesterdayTotal}
-              yesterdayGoal={yesterdayEntry?.mainGoal || ''}
+              rating={yesterdayRating}
+              onRate={setYesterdayRating}
             />
           )}
-          {step === 1 && <RitualMood value={mood} onChange={setMood} />}
-          {step === 2 && <RitualBrainDump value={brainDump} onChange={setBrainDump} />}
-          {step === 3 && (
-            <RitualMainGoal
-              value={mainGoal}
-              onChange={setMainGoal}
+          {stepKey === 'mood' && <RitualMood value={mood} onChange={setMood} />}
+          {stepKey === 'energy' && <RitualEnergy value={energy} onChange={setEnergy} />}
+          {stepKey === 'notes' && <RitualBrainDump value={brainDump} onChange={setBrainDump} />}
+          {stepKey === 'goals' && (
+            <RitualGoals
+              goals={goals}
+              onChange={setGoals}
               overarchingGoal={settings.overarchingGoal}
             />
           )}
@@ -466,7 +637,7 @@ export function MorningRitual(): React.JSX.Element {
             ))}
           </div>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-            {step === 2 && !brainDump.trim() && (
+            {stepKey === 'notes' && !brainDump.trim() && (
               <button
                 onClick={() => setStep(step + 1)}
                 style={{

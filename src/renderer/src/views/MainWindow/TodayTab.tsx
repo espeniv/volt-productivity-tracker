@@ -1,8 +1,12 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { useDailyStore } from '../../store/useDailyStore'
+import { Icon } from '../../design/Icon'
 import { fmtDuration, fmtTimeOfDay, dateKey, nowWithOffset } from '../../design/format'
 import { useT } from '../../i18n/useT'
 import type { DailyEntry, Session } from '../../../../shared/types'
+
+const MOOD_EMOJI: Record<number, string> = { 1: '☹️', 2: '🙁', 3: '😐', 4: '🙂', 5: '😊' }
+const ENERGY_EMOJI: Record<number, string> = { 1: '🪫', 2: '😴', 3: '😌', 4: '🙂', 5: '⚡' }
 
 function SessionBar({ duration }: { duration: number }): React.JSX.Element {
   const pct = Math.min(1, duration / (90 * 60))
@@ -71,6 +75,62 @@ function AutoTextarea({
   )
 }
 
+function MorningGate(): React.JSX.Element {
+  const t = useT()
+  return (
+    <div
+      style={{
+        height: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '40px 6%'
+      }}
+    >
+      <div style={{ textAlign: 'center', maxWidth: 380 }}>
+        <div
+          className="display"
+          style={{
+            fontSize: 24,
+            lineHeight: 1.25,
+            fontWeight: 600,
+            color: 'var(--ink)',
+            letterSpacing: '-0.01em',
+            marginBottom: 8
+          }}
+        >
+          {t('morning_not_done_title')}
+        </div>
+        <div style={{ fontSize: 14, color: 'var(--ink-3)', lineHeight: 1.55, marginBottom: 22 }}>
+          {t('morning_not_done_sub')}
+        </div>
+        <button
+          onClick={() => window.api.openMorningRitual()}
+          className="focus-ring"
+          style={{
+            height: 44,
+            padding: '0 22px',
+            background: 'var(--accent)',
+            color: 'var(--accent-ink)',
+            border: 'none',
+            borderRadius: 999,
+            fontSize: 14,
+            fontWeight: 500,
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8,
+            cursor: 'pointer',
+            boxShadow: 'var(--shadow-sm)'
+          }}
+        >
+          <Icon name="play" size={13} />
+          <span>{t('start_check_in')}</span>
+        </button>
+      </div>
+    </div>
+  )
+}
+
 export function TodayTab(): React.JSX.Element {
   const settings = useDailyStore((s) => s.settings)
   const entries = useDailyStore((s) => s.entries)
@@ -81,10 +141,13 @@ export function TodayTab(): React.JSX.Element {
   const today = dateKey(nowWithOffset(settings.devDayOffset), settings.dayRolloverHour)
   const entry: DailyEntry = entries[today] || {
     date: today,
-    mainGoal: '',
+    goals: [],
     brainDump: '',
     sessions: []
   }
+
+  const morningDone = entry.goals.length > 0
+  if (!morningDone) return <MorningGate />
 
   const todaysSessions: Session[] = Object.values(sessions)
     .filter((s) => s.date === today && s.endTime !== null)
@@ -92,12 +155,22 @@ export function TodayTab(): React.JSX.Element {
 
   const totalToday = todaysSessions.reduce((acc, s) => acc + s.duration, 0)
 
-  const [editingGoal, setEditingGoal] = useState(false)
-
   const persist = (patch: Partial<DailyEntry>): void => {
     const next = { ...entry, ...patch }
     upsertEntry(next)
     window.api.store.updateEntry(next)
+  }
+
+  const setGoalAt = (i: number, v: string): void => {
+    const next = entry.goals.slice()
+    next[i] = v
+    persist({ goals: next })
+  }
+  const removeGoalAt = (i: number): void => {
+    persist({ goals: entry.goals.filter((_, idx) => idx !== i) })
+  }
+  const addGoal = (): void => {
+    persist({ goals: [...entry.goals, ''] })
   }
 
   return (
@@ -112,56 +185,105 @@ export function TodayTab(): React.JSX.Element {
             fontWeight: 500
           }}
         >
-          {t('todays_goal')}
+          {t('goals_label')}
         </div>
+        {(entry.mood || entry.energy) && (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              marginLeft: 'auto',
+              fontSize: 13,
+              color: 'var(--ink-3)'
+            }}
+          >
+            {entry.mood && (
+              <span title={t('mood_label')} style={{ display: 'inline-flex', gap: 4, alignItems: 'center' }}>
+                <span style={{ fontSize: 18 }}>{MOOD_EMOJI[entry.mood]}</span>
+              </span>
+            )}
+            {entry.energy && (
+              <span title={t('energy_label')} style={{ display: 'inline-flex', gap: 4, alignItems: 'center' }}>
+                <span style={{ fontSize: 18 }}>{ENERGY_EMOJI[entry.energy]}</span>
+              </span>
+            )}
+          </div>
+        )}
       </div>
 
-      {editingGoal || !entry.mainGoal ? (
-        <input
-          autoFocus
-          value={entry.mainGoal}
-          onChange={(e) => persist({ mainGoal: e.target.value })}
-          onBlur={() => setEditingGoal(false)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') setEditingGoal(false)
-          }}
-          placeholder={t('set_today_goal')}
-          className="display focus-ring"
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 12 }}>
+        {entry.goals.map((g, i) => (
+          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span
+              style={{
+                width: 6,
+                height: 6,
+                borderRadius: '50%',
+                background: 'var(--accent)',
+                flexShrink: 0
+              }}
+            />
+            <input
+              value={g}
+              onChange={(e) => setGoalAt(i, e.target.value)}
+              className="display focus-ring"
+              style={{
+                fieldSizing: 'content',
+                minWidth: 220,
+                maxWidth: '100%',
+                background: 'transparent',
+                border: 'none',
+                outline: 'none',
+                fontSize: 22,
+                padding: '4px 0',
+                color: 'var(--ink)',
+                fontWeight: 600,
+                letterSpacing: '-0.015em'
+              }}
+            />
+            {entry.goals.length > 1 && (
+              <button
+                onClick={() => removeGoalAt(i)}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: 'var(--ink-4)',
+                  padding: 4,
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center'
+                }}
+                aria-label="Remove"
+              >
+                <Icon name="x" size={14} />
+              </button>
+            )}
+          </div>
+        ))}
+        <button
+          onClick={addGoal}
           style={{
-            display: 'inline-block',
-            fieldSizing: 'content',
-            maxWidth: '100%',
-            minWidth: 220,
+            alignSelf: 'flex-start',
             background: 'transparent',
             border: 'none',
-            outline: 'none',
-            borderBottom: '1.5px solid var(--accent)',
-            fontSize: 30,
+            color: 'var(--ink-3)',
+            fontSize: 12.5,
+            fontWeight: 500,
             padding: '4px 0',
-            color: 'var(--ink)',
-            fontWeight: 600,
-            letterSpacing: '-0.02em'
-          }}
-        />
-      ) : (
-        <div
-          className="display"
-          onClick={() => setEditingGoal(true)}
-          style={{
-            fontSize: 30,
-            lineHeight: 1.2,
-            color: 'var(--ink)',
-            cursor: 'text',
-            letterSpacing: '-0.02em',
-            fontWeight: 600
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            cursor: 'pointer',
+            marginTop: 2
           }}
         >
-          {entry.mainGoal}
-        </div>
-      )}
+          <Icon name="plus" size={13} /> {t('add_goal')}
+        </button>
+      </div>
 
       {settings.overarchingGoal && (
-        <div style={{ fontSize: 13, color: 'var(--ink-4)', marginTop: 8 }}>
+        <div style={{ fontSize: 13, color: 'var(--ink-4)', marginTop: 14 }}>
           {t('toward')} <span style={{ color: 'var(--ink-3)' }}>{settings.overarchingGoal}</span>
         </div>
       )}
@@ -177,6 +299,7 @@ export function TodayTab(): React.JSX.Element {
         <section>
           <div
             style={{
+              height: 24,
               display: 'flex',
               alignItems: 'baseline',
               justifyContent: 'space-between',
@@ -263,6 +386,7 @@ export function TodayTab(): React.JSX.Element {
         <section>
           <div
             style={{
+              height: 24,
               display: 'flex',
               alignItems: 'baseline',
               justifyContent: 'space-between',

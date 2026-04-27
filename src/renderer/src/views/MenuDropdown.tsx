@@ -80,55 +80,56 @@ function pillButton(tone: 'accent' | 'ghost', full = true): CSSProperties {
   }
 }
 
-function FooterRow({ secondary }: { secondary?: string }): React.JSX.Element {
+function OpenAppCorner({ alignTop }: { alignTop: number }): React.JSX.Element {
   const t = useT()
   return (
-    <div style={{ padding: 8, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-      <button
-        onClick={() => {
-          window.api.showMainWindow()
-          window.api.hideTrayWindow()
-        }}
-        style={{
-          background: 'transparent',
-          border: 'none',
-          padding: '6px 10px',
-          borderRadius: 6,
-          color: 'var(--ink-3)',
-          fontSize: 12,
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: 6,
-          cursor: 'pointer'
-        }}
+    <button
+      onClick={() => {
+        window.api.showMainWindow()
+        window.api.hideTrayWindow()
+      }}
+      title={t('open_app')}
+      aria-label={t('open_app')}
+      style={{
+        position: 'absolute',
+        top: alignTop,
+        right: 12,
+        width: 24,
+        height: 24,
+        borderRadius: 6,
+        background: 'transparent',
+        border: 'none',
+        outline: 'none',
+        color: 'var(--ink-3)',
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        cursor: 'pointer',
+        transition: 'color 120ms ease',
+        zIndex: 1
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.color = 'var(--ink)'
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.color = 'var(--ink-3)'
+      }}
+    >
+      <svg
+        width="13"
+        height="13"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       >
-        {t('open_app')} <Icon name="arrow-right" size={12} />
-      </button>
-      {secondary && (
-        <span style={{ fontSize: 11, color: 'var(--ink-4)', paddingRight: 10 }}>{secondary}</span>
-      )}
-    </div>
-  )
-}
-
-function OverarchingRow({ goal }: { goal: string }): React.JSX.Element {
-  const t = useT()
-  return (
-    <div style={{ padding: '12px 18px' }}>
-      <div
-        style={{
-          fontSize: 10,
-          color: 'var(--ink-4)',
-          textTransform: 'uppercase',
-          letterSpacing: '0.08em',
-          marginBottom: 4,
-          fontWeight: 500
-        }}
-      >
-        {t('working_toward')}
-      </div>
-      <div style={{ fontSize: 13, color: 'var(--ink-2)', lineHeight: 1.4 }}>{goal}</div>
-    </div>
+        <path d="M14 4h6v6" />
+        <path d="M20 4L12 12" />
+        <path d="M19 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5" />
+      </svg>
+    </button>
   )
 }
 
@@ -171,11 +172,11 @@ function IdleStart({
         style={{
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between',
+          justifyContent: 'center',
           marginTop: 12
         }}
       >
-        <div>
+        <div style={{ textAlign: 'center' }}>
           <div
             style={{
               fontSize: 10.5,
@@ -214,7 +215,15 @@ function ActiveTimer({
   const t = useT()
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 8,
+          marginBottom: 10
+        }}
+      >
         <span
           style={{
             width: 8,
@@ -245,7 +254,8 @@ function ActiveTimer({
           color: 'var(--ink)',
           marginBottom: 14,
           letterSpacing: '-0.02em',
-          fontWeight: 600
+          fontWeight: 600,
+          textAlign: 'center'
         }}
       >
         {fmtClock(seconds)}
@@ -279,7 +289,7 @@ function ActiveTimer({
           className="focus-ring"
           title="End and log this session"
           style={{
-            flex: 1.4,
+            flex: 1,
             height: 40,
             background: '#1A1F2A',
             color: '#F4F6FA',
@@ -299,17 +309,6 @@ function ActiveTimer({
           <span>{t('end_session')}</span>
         </button>
       </div>
-      <div
-        style={{
-          fontSize: 11,
-          color: 'var(--ink-4)',
-          marginTop: 8,
-          textAlign: 'center',
-          lineHeight: 1.4
-        }}
-      >
-        {t('end_session_help')}
-      </div>
       <style>{`
         @keyframes dailyPulse {
           0%   { box-shadow: 0 0 0 0 var(--accent-ring); }
@@ -323,7 +322,6 @@ function ActiveTimer({
 
 export function MenuDropdown(): React.JSX.Element {
   const timer = useDailyStore((s) => s.timer)
-  const settings = useDailyStore((s) => s.settings)
   const entries = useDailyStore((s) => s.entries)
   const today = useTodayKey()
   const todaysEntry = entries[today]
@@ -342,6 +340,21 @@ export function MenuDropdown(): React.JSX.Element {
     return () => ro.disconnect()
   }, [])
 
+  useEffect(() => {
+    // Strip any auto-applied focus from the first tabbable element when the
+    // popover opens — macOS otherwise leaves a button looking pre-selected.
+    const blur = (): void => {
+      const active = document.activeElement
+      if (active instanceof HTMLElement && active !== document.body) active.blur()
+    }
+    blur()
+    const onShow = (): void => {
+      requestAnimationFrame(blur)
+    }
+    window.addEventListener('focus', onShow)
+    return () => window.removeEventListener('focus', onShow)
+  }, [])
+
   const wrap: CSSProperties = {
     width: MENU_W,
     background: 'var(--glass)',
@@ -352,18 +365,19 @@ export function MenuDropdown(): React.JSX.Element {
     boxShadow: 'var(--shadow-glass)',
     border: '0.5px solid var(--line-strong)',
     overflow: 'hidden',
-    fontFamily: 'var(--font-sans)'
+    fontFamily: 'var(--font-sans)',
+    position: 'relative'
   }
 
   const isActive = timer.status === 'running' || timer.status === 'paused'
-  const hasGoal = !!todaysEntry?.mainGoal?.trim()
-  const showOverarching = !!settings.overarchingGoal?.trim()
+  const goals = todaysEntry?.goals?.filter((g) => g.trim().length > 0) || []
+  const hasGoal = goals.length > 0
 
   // Pre-ritual: no main goal set today and timer idle
   if (!hasGoal && !isActive) {
     return (
       <div ref={rootRef} style={wrap}>
-        <div style={{ padding: '20px 18px 14px' }}>
+        <div style={{ padding: '20px 18px 14px', textAlign: 'center' }}>
           <div
             style={{
               fontSize: 11,
@@ -404,14 +418,14 @@ export function MenuDropdown(): React.JSX.Element {
             <Icon name="arrow-right" size={14} />
           </button>
         </div>
-        <Divider />
-        <FooterRow />
+        <OpenAppCorner alignTop={14} />
       </div>
     )
   }
 
   return (
     <div ref={rootRef} style={wrap}>
+      <OpenAppCorner alignTop={hasGoal ? 12 : 14} />
       {hasGoal && (
         <>
           <div style={{ padding: '16px 18px 14px' }}>
@@ -419,7 +433,8 @@ export function MenuDropdown(): React.JSX.Element {
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'space-between',
+                justifyContent: 'center',
+                gap: 8,
                 marginBottom: 8
               }}
             >
@@ -435,7 +450,7 @@ export function MenuDropdown(): React.JSX.Element {
                 {t('todays_goal')}
               </div>
               <div style={{ fontSize: 11, color: 'var(--ink-4)' }} className="tnum">
-                {todayLong().split(',')[0]}
+                · {todayLong().split(',')[0]}
               </div>
             </div>
             <div
@@ -445,10 +460,16 @@ export function MenuDropdown(): React.JSX.Element {
                 lineHeight: 1.35,
                 color: 'var(--ink)',
                 fontWeight: 500,
-                letterSpacing: '-0.01em'
+                letterSpacing: '-0.01em',
+                textAlign: 'center',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 4
               }}
             >
-              {todaysEntry?.mainGoal}
+              {goals.map((g, i) => (
+                <span key={i}>{g}</span>
+              ))}
             </div>
           </div>
           <Divider />
@@ -463,15 +484,6 @@ export function MenuDropdown(): React.JSX.Element {
         )}
       </div>
 
-      {showOverarching && (
-        <>
-          <Divider />
-          <OverarchingRow goal={settings.overarchingGoal} />
-        </>
-      )}
-
-      <Divider />
-      <FooterRow />
     </div>
   )
 }

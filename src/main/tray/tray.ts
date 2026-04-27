@@ -2,14 +2,18 @@ import { Tray, Menu, nativeImage } from 'electron'
 import { toggleTrayWindow } from '../windows/tray-window'
 import { showMainWindow } from '../windows/main-window'
 import iconPath from '../../../resources/icon.png?asset'
+import iconActivePath from '../../../resources/icon-active.png?asset'
 
 let tray: Tray | null = null
 
-export function createTray(): Tray {
-  const image = nativeImage.createFromPath(iconPath).resize({ width: 18, height: 18 })
-  image.setTemplateImage(true)
+function loadImage(path: string): Electron.NativeImage {
+  const img = nativeImage.createFromPath(path)
+  img.setTemplateImage(true)
+  return img
+}
 
-  tray = new Tray(image)
+export function createTray(): Tray {
+  tray = new Tray(loadImage(iconPath))
   tray.setToolTip('Daily')
 
   tray.on('click', (_event, bounds) => toggleTrayWindow(bounds))
@@ -23,6 +27,10 @@ export function createTray(): Tray {
   })
 
   return tray
+}
+
+export function setTrayActive(active: boolean): void {
+  tray?.setImage(loadImage(active ? iconActivePath : iconPath))
 }
 
 export function getTray(): Tray | null {

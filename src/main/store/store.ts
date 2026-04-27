@@ -35,12 +35,16 @@ const schema = {
       type: 'object',
       properties: {
         date: { type: 'string' },
+        goals: { type: 'array', items: { type: 'string' } },
+        // Legacy field kept in schema so pre-migration entries don't fail validation on load.
         mainGoal: { type: 'string' },
         brainDump: { type: 'string' },
         sessions: { type: 'array', items: { type: 'string' } },
-        mood: { type: 'number' }
+        mood: { type: 'number' },
+        energy: { type: 'number' },
+        dayRating: { type: 'number' }
       },
-      required: ['date', 'mainGoal', 'brainDump', 'sessions']
+      required: ['date']
     },
     default: {}
   },
@@ -73,6 +77,29 @@ export function initStore(): void {
   // Backfill missing fields onto previously-persisted settings
   const current = store.get('settings')
   store.set('settings', { ...defaultSettings, ...current })
+
+  // Migrate any pre-multi-goal entries: { mainGoal: string } → { goals: string[] }
+  const rawEntries = store.get('entries') as unknown as Record<string, Record<string, unknown>>
+  let dirty = false
+  const migrated: Record<string, DailyEntry> = {}
+  for (const [k, e] of Object.entries(rawEntries)) {
+    if (Array.isArray(e.goals)) {
+      migrated[k] = e as unknown as DailyEntry
+    } else {
+      dirty = true
+      const main = typeof e.mainGoal === 'string' ? e.mainGoal : ''
+      migrated[k] = {
+        date: typeof e.date === 'string' ? e.date : k,
+        goals: main ? [main] : [],
+        brainDump: typeof e.brainDump === 'string' ? e.brainDump : '',
+        sessions: Array.isArray(e.sessions) ? (e.sessions as string[]) : [],
+        mood: typeof e.mood === 'number' ? e.mood : undefined,
+        energy: typeof e.energy === 'number' ? e.energy : undefined,
+        dayRating: typeof e.dayRating === 'number' ? e.dayRating : undefined
+      }
+    }
+  }
+  if (dirty) store.set('entries', migrated)
 }
 
 function requireStore(): Store<PersistedState> {

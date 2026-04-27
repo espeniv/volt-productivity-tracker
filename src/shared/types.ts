@@ -10,10 +10,13 @@ export interface Session {
 
 export interface DailyEntry {
   date: string
-  mainGoal: string
+  goals: string[]
   brainDump: string
   sessions: string[]
   mood?: number
+  energy?: number
+  /** Rating user gave to this day during the next morning's check-in. */
+  dayRating?: number
 }
 
 export interface Settings {

@@ -3,6 +3,7 @@ import { BrowserWindow } from 'electron'
 import { IpcChannels } from '../../shared/ipc-channels'
 import type { Session, TimerState } from '../../shared/types'
 import { upsertSession, deleteSession, getState, getSettings } from '../store/store'
+import { setTrayActive } from '../tray/tray'
 
 let state: TimerState = {
   status: 'idle',
@@ -130,6 +131,7 @@ function stopPersistLoop(): void {
 function broadcast(): void {
   const snapshot = getTimerState()
   const persisted = getState()
+  setTrayActive(snapshot.status === 'running')
   for (const win of BrowserWindow.getAllWindows()) {
     win.webContents.send(IpcChannels.TimerStateChanged, snapshot)
     win.webContents.send('store:state-changed', persisted)
