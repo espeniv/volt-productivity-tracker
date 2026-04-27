@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useDailyStore } from '../store/useDailyStore'
 import { PrimaryButton, GhostButton } from '../design/Buttons'
+import { Logo } from '../design/Logo'
 import { useT } from '../i18n/useT'
 
 const W = 480
@@ -17,6 +18,7 @@ function OnbWelcome(): React.JSX.Element {
         flexDirection: 'column'
       }}
     >
+      <Logo size={48} style={{ marginBottom: 28 }} title="Daily" />
       <div
         className="display"
         style={{

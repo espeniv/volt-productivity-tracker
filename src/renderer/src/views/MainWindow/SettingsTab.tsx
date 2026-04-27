@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { useDailyStore } from '../../store/useDailyStore'
+import { Logo } from '../../design/Logo'
 import { useT } from '../../i18n/useT'
 import type { Language, Settings } from '../../../../shared/types'
 
@@ -373,13 +374,23 @@ export function SettingsTab(): React.JSX.Element {
 
       <div
         style={{
-          fontSize: 11,
-          color: 'var(--ink-4)',
-          marginTop: 32,
-          textAlign: 'center'
+          marginTop: 36,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: 8
         }}
       >
-        {t('made_for_quiet_days')}
+        <Logo size={28} title="Daily" />
+        <div
+          style={{
+            fontSize: 11,
+            color: 'var(--ink-4)',
+            textAlign: 'center'
+          }}
+        >
+          {t('made_for_quiet_days')}
+        </div>
       </div>
     </div>
   )

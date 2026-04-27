@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 24 24">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+    <linearGradient id="dailyBg" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#7AB3E0"/>
       <stop offset="1" stop-color="#3F73A8"/>
     </linearGradient>
-    <radialGradient id="glow" cx="0.5" cy="0.42" r="0.55">
+    <radialGradient id="dailyGlow" cx="0.5" cy="0.38" r="0.55">
       <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.22"/>
       <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
     </radialGradient>
   </defs>
-  <rect x="0" y="0" width="1024" height="1024" rx="224" ry="224" fill="url(#bg)"/>
-  <rect x="0" y="0" width="1024" height="1024" rx="224" ry="224" fill="url(#glow)"/>
-  <circle cx="512" cy="512" r="248" fill="none" stroke="#FFFFFF" stroke-width="42"/>
-  <circle cx="512" cy="512" r="92" fill="#FFFFFF"/>
+  <rect x="0" y="0" width="24" height="24" rx="5.25" ry="5.25" fill="url(#dailyBg)"/>
+  <rect x="0" y="0" width="24" height="24" rx="5.25" ry="5.25" fill="url(#dailyGlow)"/>
+  <path d="M 14 4 L 4.6 14 L 11 14 L 10 20 L 19.4 10 L 13 10 Z"
+        fill="#FFFFFF"
+        stroke="#FFFFFF" stroke-width="0.4"
+        stroke-linejoin="round"/>
 </svg>
