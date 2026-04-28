@@ -7,6 +7,7 @@ export const IpcChannels = {
   StoreGetAll: 'store:get-all',
   StoreUpdateEntry: 'store:update-entry',
   StoreUpdateSettings: 'store:update-settings',
+  StoreStateChanged: 'store:state-changed',
   WindowShowMain: 'window:show-main',
   WindowHideTray: 'window:hide-tray',
   WindowShowTray: 'window:show-tray',

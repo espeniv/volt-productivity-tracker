@@ -1,7 +1,6 @@
 import { useDailyStore } from './useDailyStore'
 import type { PersistedState } from '../../../shared/types'
-
-const STORE_CHANGED = 'store:state-changed'
+import { IpcChannels } from '../../../shared/ipc-channels'
 
 export async function hydrateFromMain(): Promise<void> {
   const state = await window.api.store.getAll()
@@ -11,7 +10,7 @@ export async function hydrateFromMain(): Promise<void> {
     useDailyStore.getState().setTimer(timer)
   })
 
-  window.electron.ipcRenderer.on(STORE_CHANGED, (_e, next: PersistedState) => {
-    useDailyStore.getState().setHydrated(next)
+  window.electron.ipcRenderer.on(IpcChannels.StoreStateChanged, (_e, next: PersistedState) => {
+    useDailyStore.getState().replaceState(next)
   })
 }

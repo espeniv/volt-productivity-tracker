@@ -1,7 +1,16 @@
 import { useMemo, useState } from 'react'
 import { useDailyStore } from '../../store/useDailyStore'
 import { Icon } from '../../design/Icon'
-import { fmtDuration, fmtTimeOfDay, dateKey, nowWithOffset } from '../../design/format'
+import {
+  fmtDuration,
+  fmtTimeOfDay,
+  dateKey,
+  nowWithOffset,
+  fmtMonthYear,
+  fmtFullDate,
+  weekStartsOnMonday,
+  weekdayShorts
+} from '../../design/format'
 import { useT } from '../../i18n/useT'
 
 const MOOD_EMOJI: Record<number, string> = { 1: '☹️', 2: '🙁', 3: '😐', 4: '🙂', 5: '😊' }
@@ -127,6 +136,8 @@ export function CalendarTab(): React.JSX.Element {
   const sessions = useDailyStore((s) => s.sessions)
   const entries = useDailyStore((s) => s.entries)
   const settings = useDailyStore((s) => s.settings)
+  const lang = settings.language
+  const mondayFirst = weekStartsOnMonday(lang)
   const t = useT()
 
   const todayDateMs = nowWithOffset(settings.devDayOffset)
@@ -145,12 +156,10 @@ export function CalendarTab(): React.JSX.Element {
     return map
   }, [sessions])
 
-  const monthLabel = new Date(view.year, view.month, 1).toLocaleDateString(undefined, {
-    month: 'long',
-    year: 'numeric'
-  })
+  const monthLabel = fmtMonthYear(new Date(view.year, view.month, 1), lang)
 
-  const firstDay = new Date(view.year, view.month, 1).getDay()
+  const firstDayJs = new Date(view.year, view.month, 1).getDay()
+  const firstDay = mondayFirst ? (firstDayJs + 6) % 7 : firstDayJs
   const daysInMonth = new Date(view.year, view.month + 1, 0).getDate()
   const cells: (number | null)[] = []
   for (let i = 0; i < firstDay; i++) cells.push(null)
@@ -209,7 +218,7 @@ export function CalendarTab(): React.JSX.Element {
             marginBottom: 6
           }}
         >
-          {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
+          {weekdayShorts(lang).map((d, i) => (
             <div
               key={i}
               style={{
@@ -286,13 +295,7 @@ export function CalendarTab(): React.JSX.Element {
             fontWeight: 500
           }}
         >
-          {selectedDate === todayStr
-            ? t('today')
-            : new Date(selectedDate).toLocaleDateString(undefined, {
-                month: 'long',
-                day: 'numeric',
-                year: 'numeric'
-              })}
+          {selectedDate === todayStr ? t('today') : fmtFullDate(new Date(selectedDate), lang)}
         </div>
         {selEntry?.goals && selEntry.goals.length > 0 ? (
           <div
@@ -412,7 +415,7 @@ export function CalendarTab(): React.JSX.Element {
                     i === selSessions.length - 1 ? 'none' : '0.5px solid var(--line)'
                 }}
               >
-                <span className="tnum">{fmtTimeOfDay(new Date(s.startTime))}</span>
+                <span className="tnum">{fmtTimeOfDay(new Date(s.startTime), lang)}</span>
                 <span className="tnum">{fmtDuration(s.duration)}</span>
               </div>
             ))

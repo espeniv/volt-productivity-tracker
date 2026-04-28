@@ -14,12 +14,46 @@ export function fmtDuration(seconds: number): string {
   return `${h}h ${m}m`
 }
 
-export function fmtTimeOfDay(date: Date): string {
-  return date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
+import type { Language } from '../../../shared/types'
+
+function locale(lang?: Language): string {
+  return lang === 'no' ? 'nb-NO' : 'en-US'
 }
 
-export function todayLong(d: Date = new Date()): string {
-  return d.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })
+export function fmtTimeOfDay(date: Date, lang?: Language): string {
+  return date.toLocaleTimeString(locale(lang), { hour: 'numeric', minute: '2-digit' })
+}
+
+export function todayLong(d: Date = new Date(), lang?: Language): string {
+  return d.toLocaleDateString(locale(lang), { weekday: 'long', month: 'long', day: 'numeric' })
+}
+
+export function fmtMonthYear(d: Date, lang?: Language): string {
+  return d.toLocaleDateString(locale(lang), { month: 'long', year: 'numeric' })
+}
+
+export function fmtFullDate(d: Date, lang?: Language): string {
+  return d.toLocaleDateString(locale(lang), { month: 'long', day: 'numeric', year: 'numeric' })
+}
+
+/** Norwegian/most-of-Europe is Monday-first; en-US is Sunday-first. */
+export function weekStartsOnMonday(lang?: Language): boolean {
+  return lang === 'no'
+}
+
+export function weekdayShorts(lang?: Language): string[] {
+  const base = new Date(2024, 0, 7) // a Sunday
+  const fmt = new Intl.DateTimeFormat(locale(lang), { weekday: 'narrow' })
+  const days: string[] = []
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(base)
+    d.setDate(base.getDate() + i)
+    days.push(fmt.format(d))
+  }
+  if (weekStartsOnMonday(lang)) {
+    days.push(days.shift() as string)
+  }
+  return days
 }
 
 export function dateKey(ms: number, rolloverHour = 0): string {

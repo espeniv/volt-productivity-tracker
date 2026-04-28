@@ -27,7 +27,7 @@ export function showMainWindow(): BrowserWindow {
     visualEffectState: 'active',
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
-      sandbox: false
+      sandbox: true
     }
   })
 
@@ -36,7 +36,7 @@ export function showMainWindow(): BrowserWindow {
     mainWindow = null
   })
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-    shell.openExternal(url)
+    if (/^(https?:|mailto:)/i.test(url)) shell.openExternal(url)
     return { action: 'deny' }
   })
 

@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { useEffect, useRef, type ReactNode } from 'react'
 import { useDailyStore } from '../../store/useDailyStore'
 import { Logo } from '../../design/Logo'
 import { useT } from '../../i18n/useT'
@@ -159,8 +159,34 @@ export function SettingsTab(): React.JSX.Element {
   const updateSettingsLocal = useDailyStore((s) => s.updateSettings)
   const t = useT()
 
-  const save = (patch: Partial<Settings>): void => {
+  const flushTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const pendingPatchRef = useRef<Partial<Settings>>({})
+
+  const flushSettings = (): void => {
+    if (flushTimerRef.current) {
+      clearTimeout(flushTimerRef.current)
+      flushTimerRef.current = null
+    }
+    if (Object.keys(pendingPatchRef.current).length === 0) return
+    const patch = pendingPatchRef.current
+    pendingPatchRef.current = {}
+    window.api.store.updateSettings(patch)
+  }
+
+  useEffect(() => {
+    return () => {
+      if (flushTimerRef.current) flushSettings()
+    }
+  }, [])
+
+  const save = (patch: Partial<Settings>, debounced = false): void => {
     updateSettingsLocal(patch)
+    if (debounced) {
+      pendingPatchRef.current = { ...pendingPatchRef.current, ...patch }
+      if (flushTimerRef.current) clearTimeout(flushTimerRef.current)
+      flushTimerRef.current = setTimeout(flushSettings, 350)
+      return
+    }
     window.api.store.updateSettings(patch)
   }
 
@@ -192,7 +218,7 @@ export function SettingsTab(): React.JSX.Element {
       >
         <textarea
           value={settings.overarchingGoal}
-          onChange={(e) => save({ overarchingGoal: e.target.value })}
+          onChange={(e) => save({ overarchingGoal: e.target.value }, true)}
           rows={2}
           className="focus-ring"
           style={{
@@ -282,6 +308,17 @@ export function SettingsTab(): React.JSX.Element {
         <SettingsRow label={t('gentle_reminder')} desc={t('gentle_reminder_sub')}>
           <Toggle value={settings.gentleReminder} onChange={(v) => save({ gentleReminder: v })} />
         </SettingsRow>
+        {settings.gentleReminder && (
+          <SettingsRow label={t('reminder_time_label')}>
+            <SettingsInput
+              value={settings.reminderTime}
+              onChange={(v) => save({ reminderTime: v })}
+              small
+              mono
+              type="time"
+            />
+          </SettingsRow>
+        )}
       </SettingsGroup>
 
       <SettingsGroup title={t('suggestions_title')} subtitle={t('suggestions_sub')}>

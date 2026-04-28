@@ -25,7 +25,7 @@ export function createTrayWindow(): BrowserWindow {
     visualEffectState: 'active',
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
-      sandbox: false
+      sandbox: true
     }
   })
 

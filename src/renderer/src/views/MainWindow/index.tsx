@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Icon } from '../../design/Icon'
 import { todayLong } from '../../design/format'
 import { useT } from '../../i18n/useT'
+import { useDailyStore } from '../../store/useDailyStore'
 import { TodayTab } from './TodayTab'
 import { CalendarTab } from './CalendarTab'
 import { SettingsTab } from './SettingsTab'
@@ -10,6 +11,7 @@ type Tab = 'today' | 'history' | 'settings'
 
 export function MainWindow(): React.JSX.Element {
   const t = useT()
+  const lang = useDailyStore((s) => s.settings.language)
   const [tab, setTab] = useState<Tab>('today')
   const [lastTab, setLastTab] = useState<Exclude<Tab, 'settings'>>('today')
 
@@ -85,7 +87,7 @@ export function MainWindow(): React.JSX.Element {
 
         <div style={{ flex: 1 }} />
         <div style={{ fontSize: 12, color: 'var(--ink-4)' }} className="tnum">
-          {todayLong()}
+          {todayLong(new Date(), lang)}
         </div>
 
         <button

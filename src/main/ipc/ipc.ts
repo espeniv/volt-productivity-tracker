@@ -5,7 +5,7 @@ import { getTrayWindow, toggleTrayWindow } from '../windows/tray-window'
 import { getTray } from '../tray/tray'
 import { showFloatingWindow } from '../windows/floating-window'
 import { getState, resetAll, updateSettings, upsertEntry } from '../store/store'
-import { testMorningReminder } from '../notifications/morning-reminder'
+import { rescheduleMorningReminder, testMorningReminder } from '../notifications/morning-reminder'
 import { pauseTimer, resumeTimer, startTimer, stopTimer } from '../timer/timer'
 import type { DailyEntry, Settings } from '../../shared/types'
 
@@ -57,6 +57,7 @@ export function registerIpcHandlers(): void {
   ipcMain.handle(IpcChannels.StoreUpdateSettings, (_e, patch: Partial<Settings>) => {
     const next = updateSettings(patch)
     applySettingsSideEffects(next)
+    if ('reminderTime' in patch || 'gentleReminder' in patch) rescheduleMorningReminder()
     broadcastStoreUpdate()
     return next
   })
@@ -94,7 +95,7 @@ export function registerIpcHandlers(): void {
 function broadcastStoreUpdate(): void {
   const state = getState()
   for (const win of BrowserWindow.getAllWindows()) {
-    win.webContents.send('store:state-changed', state)
+    win.webContents.send(IpcChannels.StoreStateChanged, state)
   }
 }
 

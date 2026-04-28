@@ -207,9 +207,10 @@ export const translations = {
     no: 'Påminnelse hvis du ikke har startet'
   },
   gentle_reminder_sub: {
-    en: 'Sent at 10:00 AM. Off by default.',
-    no: 'Sendes kl. 10:00. Av som standard.'
+    en: 'A notification if you haven’t checked in yet. Off by default.',
+    no: 'Et varsel hvis du ikke har sjekket inn ennå. Av som standard.'
   },
+  reminder_time_label: { en: 'Reminder time', no: 'Påminnelsestidspunkt' },
   language_label: { en: 'Language', no: 'Språk' },
   english: { en: 'English', no: 'Engelsk' },
   norwegian: { en: 'Norwegian', no: 'Norsk' },

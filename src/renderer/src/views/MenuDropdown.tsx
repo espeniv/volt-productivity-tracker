@@ -323,6 +323,7 @@ function ActiveTimer({
 export function MenuDropdown(): React.JSX.Element {
   const timer = useDailyStore((s) => s.timer)
   const entries = useDailyStore((s) => s.entries)
+  const lang = useDailyStore((s) => s.settings.language)
   const today = useTodayKey()
   const todaysEntry = entries[today]
   const { totalSeconds: totalToday, count: sessionsLogged } = useTodaysSessions()
@@ -450,7 +451,7 @@ export function MenuDropdown(): React.JSX.Element {
                 {t('todays_goal')}
               </div>
               <div style={{ fontSize: 11, color: 'var(--ink-4)' }} className="tnum">
-                · {todayLong().split(',')[0]}
+                · {todayLong(new Date(), lang).split(',')[0]}
               </div>
             </div>
             <div

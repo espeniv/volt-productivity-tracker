@@ -26,6 +26,8 @@ export interface Settings {
   autoLaunch: boolean
   accent: string
   gentleReminder: boolean
+  /** HH:MM (24h, local time) — when the gentle reminder fires if not yet checked in. */
+  reminderTime: string
   onboarded: boolean
   devDayOffset: number
   language: Language
@@ -35,7 +37,10 @@ export interface PersistedState {
   sessions: Record<string, Session>
   entries: Record<string, DailyEntry>
   settings: Settings
+  schemaVersion?: number
 }
+
+export const CURRENT_SCHEMA_VERSION = 2
 
 export interface TimerState {
   status: 'idle' | 'running' | 'paused'

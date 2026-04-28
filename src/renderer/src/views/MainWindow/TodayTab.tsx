@@ -154,10 +154,37 @@ export function TodayTab(): React.JSX.Element {
 
   const totalToday = todaysSessions.reduce((acc, s) => acc + s.duration, 0)
 
-  const persist = (patch: Partial<DailyEntry>): void => {
+  const pendingRef = useRef(entry)
+  pendingRef.current = entry
+  const flushTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const flush = (): void => {
+    if (flushTimerRef.current) {
+      clearTimeout(flushTimerRef.current)
+      flushTimerRef.current = null
+    }
+    window.api.store.updateEntry(pendingRef.current)
+  }
+
+  useEffect(() => {
+    return () => {
+      if (flushTimerRef.current) {
+        clearTimeout(flushTimerRef.current)
+        window.api.store.updateEntry(pendingRef.current)
+      }
+    }
+  }, [])
+
+  const persist = (patch: Partial<DailyEntry>, immediate = false): void => {
     const next = { ...entry, ...patch }
+    pendingRef.current = next
     upsertEntry(next)
-    window.api.store.updateEntry(next)
+    if (immediate) {
+      flush()
+      return
+    }
+    if (flushTimerRef.current) clearTimeout(flushTimerRef.current)
+    flushTimerRef.current = setTimeout(flush, 350)
   }
 
   const setGoalAt = (i: number, v: string): void => {
@@ -166,10 +193,10 @@ export function TodayTab(): React.JSX.Element {
     persist({ goals: next })
   }
   const removeGoalAt = (i: number): void => {
-    persist({ goals: entry.goals.filter((_, idx) => idx !== i) })
+    persist({ goals: entry.goals.filter((_, idx) => idx !== i) }, true)
   }
   const addGoal = (): void => {
-    persist({ goals: [...entry.goals, ''] })
+    persist({ goals: [...entry.goals, ''] }, true)
   }
 
   return (
@@ -360,7 +387,7 @@ export function TodayTab(): React.JSX.Element {
                   }}
                 >
                   <div className="tnum" style={{ fontSize: 13, color: 'var(--ink-3)' }}>
-                    {fmtTimeOfDay(new Date(s.startTime))}
+                    {fmtTimeOfDay(new Date(s.startTime), settings.language)}
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                     <span

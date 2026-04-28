@@ -163,7 +163,7 @@ function RitualIntro({
         }}
         className="tnum"
       >
-        {todayLong()}
+        {todayLong(new Date(), useDailyStore.getState().settings.language)}
       </div>
       <div
         className="display"

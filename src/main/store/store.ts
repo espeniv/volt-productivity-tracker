@@ -1,13 +1,15 @@
 import Store from 'electron-store'
 import type { DailyEntry, PersistedState, Session, Settings } from '../../shared/types'
+import { CURRENT_SCHEMA_VERSION } from '../../shared/types'
 
-const defaultSettings: Settings = {
+export const defaultSettings: Settings = {
   overarchingGoal: '',
   dayRolloverHour: 0,
   hideDock: true,
   autoLaunch: false,
   accent: '#5B9DD9',
   gentleReminder: false,
+  reminderTime: '10:00',
   onboarded: false,
   devDayOffset: 0,
   language: 'en'
@@ -57,49 +59,66 @@ const schema = {
       autoLaunch: { type: 'boolean' },
       accent: { type: 'string' },
       gentleReminder: { type: 'boolean' },
+      reminderTime: { type: 'string' },
       onboarded: { type: 'boolean' },
       devDayOffset: { type: 'number' },
       language: { type: 'string', enum: ['en', 'no'] }
     },
     default: defaultSettings
-  }
+  },
+  schemaVersion: { type: 'number', default: 0 }
 } as const
 
 let store: Store<PersistedState> | null = null
+
+type MigrationStore = Store<PersistedState>
+
+const migrations: Array<(s: MigrationStore) => void> = [
+  // v0 → v1: { mainGoal: string } → { goals: string[] }
+  (s) => {
+    const rawEntries = s.get('entries') as unknown as Record<string, Record<string, unknown>>
+    const migrated: Record<string, DailyEntry> = {}
+    for (const [k, e] of Object.entries(rawEntries)) {
+      if (Array.isArray(e.goals)) {
+        migrated[k] = e as unknown as DailyEntry
+      } else {
+        const main = typeof e.mainGoal === 'string' ? e.mainGoal : ''
+        migrated[k] = {
+          date: typeof e.date === 'string' ? e.date : k,
+          goals: main ? [main] : [],
+          brainDump: typeof e.brainDump === 'string' ? e.brainDump : '',
+          sessions: Array.isArray(e.sessions) ? (e.sessions as string[]) : [],
+          mood: typeof e.mood === 'number' ? e.mood : undefined,
+          energy: typeof e.energy === 'number' ? e.energy : undefined,
+          dayRating: typeof e.dayRating === 'number' ? e.dayRating : undefined
+        }
+      }
+    }
+    s.set('entries', migrated)
+  },
+  // v1 → v2: add reminderTime to settings
+  (s) => {
+    const cur = s.get('settings')
+    if (!cur.reminderTime) s.set('settings', { ...cur, reminderTime: '10:00' })
+  }
+]
 
 export function initStore(): void {
   store = new Store<PersistedState>({
     name: 'daily-data',
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     schema: schema as any,
-    defaults: { sessions: {}, entries: {}, settings: defaultSettings }
+    defaults: { sessions: {}, entries: {}, settings: defaultSettings, schemaVersion: 0 }
   })
-  // Backfill missing fields onto previously-persisted settings
+
+  // Backfill defaults onto previously-persisted settings (covers brand-new fields).
   const current = store.get('settings')
   store.set('settings', { ...defaultSettings, ...current })
 
-  // Migrate any pre-multi-goal entries: { mainGoal: string } → { goals: string[] }
-  const rawEntries = store.get('entries') as unknown as Record<string, Record<string, unknown>>
-  let dirty = false
-  const migrated: Record<string, DailyEntry> = {}
-  for (const [k, e] of Object.entries(rawEntries)) {
-    if (Array.isArray(e.goals)) {
-      migrated[k] = e as unknown as DailyEntry
-    } else {
-      dirty = true
-      const main = typeof e.mainGoal === 'string' ? e.mainGoal : ''
-      migrated[k] = {
-        date: typeof e.date === 'string' ? e.date : k,
-        goals: main ? [main] : [],
-        brainDump: typeof e.brainDump === 'string' ? e.brainDump : '',
-        sessions: Array.isArray(e.sessions) ? (e.sessions as string[]) : [],
-        mood: typeof e.mood === 'number' ? e.mood : undefined,
-        energy: typeof e.energy === 'number' ? e.energy : undefined,
-        dayRating: typeof e.dayRating === 'number' ? e.dayRating : undefined
-      }
-    }
-  }
-  if (dirty) store.set('entries', migrated)
+  // Run any migrations the user hasn't seen yet, in order.
+  const from = (store.get('schemaVersion') as number | undefined) ?? 0
+  for (let v = from; v < migrations.length; v++) migrations[v](store)
+  store.set('schemaVersion', CURRENT_SCHEMA_VERSION)
 }
 
 function requireStore(): Store<PersistedState> {

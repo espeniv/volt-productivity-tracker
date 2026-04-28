@@ -2,10 +2,15 @@ import { Notification } from 'electron'
 import { getSettings, getState } from '../store/store'
 import { showFloatingWindow } from '../windows/floating-window'
 
-const HOUR = 10
-const MINUTE = 0
-
 let timeout: NodeJS.Timeout | null = null
+
+function parseReminderTime(s: string): { hour: number; minute: number } {
+  const m = /^(\d{1,2}):(\d{2})$/.exec(s.trim())
+  if (!m) return { hour: 10, minute: 0 }
+  const hour = Math.max(0, Math.min(23, parseInt(m[1], 10)))
+  const minute = Math.max(0, Math.min(59, parseInt(m[2], 10)))
+  return { hour, minute }
+}
 
 function dateKeyForToday(offsetDays: number, rolloverHour: number): string {
   const ms = Date.now() + offsetDays * 86400_000 - rolloverHour * 3600_000
@@ -48,7 +53,8 @@ function msUntilNext(hour: number, minute: number): number {
 
 function scheduleNext(): void {
   if (timeout) clearTimeout(timeout)
-  const ms = msUntilNext(HOUR, MINUTE)
+  const { hour, minute } = parseReminderTime(getSettings().reminderTime)
+  const ms = msUntilNext(hour, minute)
   timeout = setTimeout(() => {
     maybeFire()
     scheduleNext()
@@ -56,12 +62,18 @@ function scheduleNext(): void {
 }
 
 export function initMorningReminder(): void {
-  // If the app started after today's 10:00 and the user hasn't checked in,
-  // surface the reminder once on launch as well.
+  const { hour, minute } = parseReminderTime(getSettings().reminderTime)
   const now = new Date()
-  if (now.getHours() > HOUR || (now.getHours() === HOUR && now.getMinutes() >= MINUTE)) {
+  // If the app started after today's reminder time and the user hasn't checked in,
+  // surface the reminder once on launch as well.
+  if (now.getHours() > hour || (now.getHours() === hour && now.getMinutes() >= minute)) {
     setTimeout(maybeFire, 2000)
   }
+  scheduleNext()
+}
+
+/** Re-arm the timeout when the user changes the reminder time. */
+export function rescheduleMorningReminder(): void {
   scheduleNext()
 }
 

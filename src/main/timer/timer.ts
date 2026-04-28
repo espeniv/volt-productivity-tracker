@@ -134,7 +134,7 @@ function broadcast(): void {
   setTrayActive(snapshot.status === 'running')
   for (const win of BrowserWindow.getAllWindows()) {
     win.webContents.send(IpcChannels.TimerStateChanged, snapshot)
-    win.webContents.send('store:state-changed', persisted)
+    win.webContents.send(IpcChannels.StoreStateChanged, persisted)
   }
 }
 
