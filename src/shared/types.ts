@@ -28,6 +28,8 @@ export interface Settings {
   gentleReminder: boolean
   /** HH:MM (24h, local time) — when the gentle reminder fires if not yet checked in. */
   reminderTime: string
+  /** When true, the tray window stays open on blur and can be dragged anywhere. */
+  pinTray: boolean
   onboarded: boolean
   devDayOffset: number
   language: Language
@@ -40,7 +42,7 @@ export interface PersistedState {
   schemaVersion?: number
 }
 
-export const CURRENT_SCHEMA_VERSION = 2
+export const CURRENT_SCHEMA_VERSION = 3
 
 export interface TimerState {
   status: 'idle' | 'running' | 'paused'

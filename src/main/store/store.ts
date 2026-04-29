@@ -10,6 +10,7 @@ export const defaultSettings: Settings = {
   accent: '#5B9DD9',
   gentleReminder: false,
   reminderTime: '10:00',
+  pinTray: false,
   onboarded: false,
   devDayOffset: 0,
   language: 'en'
@@ -60,6 +61,7 @@ const schema = {
       accent: { type: 'string' },
       gentleReminder: { type: 'boolean' },
       reminderTime: { type: 'string' },
+      pinTray: { type: 'boolean' },
       onboarded: { type: 'boolean' },
       devDayOffset: { type: 'number' },
       language: { type: 'string', enum: ['en', 'no'] }
@@ -100,6 +102,11 @@ const migrations: Array<(s: MigrationStore) => void> = [
   (s) => {
     const cur = s.get('settings')
     if (!cur.reminderTime) s.set('settings', { ...cur, reminderTime: '10:00' })
+  },
+  // v2 → v3: add pinTray to settings
+  (s) => {
+    const cur = s.get('settings')
+    if (typeof cur.pinTray !== 'boolean') s.set('settings', { ...cur, pinTray: false })
   }
 ]
 

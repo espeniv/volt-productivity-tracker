@@ -9,6 +9,24 @@ body,
 
 body {
   background: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+  cursor: default;
+}
+
+input,
+textarea,
+[contenteditable='true'],
+[contenteditable=''] {
+  -webkit-user-select: text;
+  user-select: text;
+  cursor: text;
+}
+
+button,
+a,
+[role='button'] {
+  cursor: pointer;
 }
 
 .daily-notes::placeholder {

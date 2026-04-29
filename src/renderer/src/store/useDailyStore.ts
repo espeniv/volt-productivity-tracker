@@ -43,6 +43,7 @@ const defaultSettings: Settings = {
   accent: '#5B9DD9',
   gentleReminder: false,
   reminderTime: '10:00',
+  pinTray: false,
   onboarded: false,
   devDayOffset: 0,
   language: 'en'

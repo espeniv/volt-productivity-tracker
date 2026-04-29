@@ -16,6 +16,7 @@ export const IpcChannels = {
   WindowCloseSelf: 'window:close-self',
   DevResetData: 'dev:reset-data',
   TrayResize: 'tray:resize',
+  TraySetPinned: 'tray:set-pinned',
   ShellOpenExternal: 'shell:open-external',
   DevTestReminder: 'dev:test-reminder'
 } as const

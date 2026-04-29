@@ -1,21 +1,45 @@
 import { BrowserWindow, screen, Rectangle } from 'electron'
+import { IpcChannels } from '../../shared/ipc-channels'
+import { getState, updateSettings } from '../store/store'
 import { join } from 'path'
 import { is } from '@electron-toolkit/utils'
+import { getSettings } from '../store/store'
 
 let trayWindow: BrowserWindow | null = null
+let pinned = false
 
 export function getTrayWindow(): BrowserWindow | null {
   return trayWindow
 }
 
+export function setTrayPinned(value: boolean): void {
+  pinned = value
+}
+
+export function isTrayPinned(): boolean {
+  return pinned
+}
+
+function autoPinFromDrag(): void {
+  if (pinned) return
+  pinned = true
+  updateSettings({ pinTray: true })
+  // Broadcast so the renderer swaps the corner button to "minimize to tray".
+  const state = getState()
+  for (const win of BrowserWindow.getAllWindows()) {
+    win.webContents.send(IpcChannels.StoreStateChanged, state)
+  }
+}
+
 export function createTrayWindow(): BrowserWindow {
+  pinned = !!getSettings().pinTray
   trayWindow = new BrowserWindow({
     width: 320,
     height: 460,
     show: false,
     frame: false,
     resizable: false,
-    movable: false,
+    movable: true,
     skipTaskbar: true,
     alwaysOnTop: true,
     fullscreenable: false,
@@ -25,15 +49,19 @@ export function createTrayWindow(): BrowserWindow {
     visualEffectState: 'active',
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
-      sandbox: true
+      sandbox: false
     }
   })
 
   trayWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true })
 
   trayWindow.on('blur', () => {
+    if (pinned) return
     if (!trayWindow?.webContents.isDevToolsOpened()) trayWindow?.hide()
   })
+  // Fires when the user starts dragging the window. Auto-pin so dragging
+  // converts the popover into a sticky window.
+  trayWindow.on('will-move', autoPinFromDrag)
   trayWindow.on('closed', () => {
     trayWindow = null
   })
@@ -53,6 +81,13 @@ export function toggleTrayWindow(trayBounds: Rectangle): void {
 
   if (trayWindow.isVisible()) {
     trayWindow.hide()
+    return
+  }
+
+  if (pinned) {
+    // Respect wherever the user has dragged it — just bring it back.
+    trayWindow.show()
+    trayWindow.focus()
     return
   }
 

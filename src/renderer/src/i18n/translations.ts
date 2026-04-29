@@ -24,6 +24,7 @@ export const translations = {
   end_session: { en: 'End session', no: 'Avslutt økt' },
   working_toward: { en: 'Long-term goal', no: 'Langsiktig mål' },
   open_app: { en: 'Open app', no: 'Åpne app' },
+  minimize_to_tray: { en: 'Send back to menu bar', no: 'Tilbake til menylinjen' },
   start_session: { en: 'Start a session', no: 'Start en økt' },
 
   // Morning ritual

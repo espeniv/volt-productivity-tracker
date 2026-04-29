@@ -1,7 +1,7 @@
 import { app, BrowserWindow, ipcMain, shell } from 'electron'
 import { IpcChannels } from '../../shared/ipc-channels'
 import { showMainWindow } from '../windows/main-window'
-import { getTrayWindow, toggleTrayWindow } from '../windows/tray-window'
+import { getTrayWindow, setTrayPinned, toggleTrayWindow } from '../windows/tray-window'
 import { getTray } from '../tray/tray'
 import { showFloatingWindow } from '../windows/floating-window'
 import { getState, resetAll, updateSettings, upsertEntry } from '../store/store'
@@ -68,6 +68,13 @@ export function registerIpcHandlers(): void {
     shell.openExternal(url)
   })
 
+  ipcMain.handle(IpcChannels.TraySetPinned, (_e, value: boolean) => {
+    const v = !!value
+    setTrayPinned(v)
+    updateSettings({ pinTray: v })
+    broadcastStoreUpdate()
+  })
+
   ipcMain.handle(IpcChannels.TrayResize, (_e, height: number) => {
     const win = getTrayWindow()
     if (!win) return
@@ -107,4 +114,5 @@ export function applySettingsSideEffects(settings: Settings): void {
   if (app.isPackaged) {
     app.setLoginItemSettings({ openAtLogin: settings.autoLaunch })
   }
+  setTrayPinned(!!settings.pinTray)
 }

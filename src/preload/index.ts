@@ -17,7 +17,9 @@ const api = {
     testReminder: (): Promise<void> => ipcRenderer.invoke(IpcChannels.DevTestReminder)
   },
   tray: {
-    resize: (height: number): Promise<void> => ipcRenderer.invoke(IpcChannels.TrayResize, height)
+    resize: (height: number): Promise<void> => ipcRenderer.invoke(IpcChannels.TrayResize, height),
+    setPinned: (value: boolean): Promise<void> =>
+      ipcRenderer.invoke(IpcChannels.TraySetPinned, value)
   },
   shell: {
     openExternal: (url: string): Promise<void> =>

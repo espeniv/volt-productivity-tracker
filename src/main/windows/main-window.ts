@@ -27,7 +27,7 @@ export function showMainWindow(): BrowserWindow {
     visualEffectState: 'active',
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
-      sandbox: true
+      sandbox: false
     }
   })
 

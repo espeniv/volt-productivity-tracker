@@ -2,16 +2,50 @@ import { useEffect, useRef, useState } from 'react'
 import { useDailyStore } from '../store/useDailyStore'
 import { Icon } from '../design/Icon'
 import { Divider } from '../design/Buttons'
-import { fmtClock, fmtDuration, todayLong, dateKey, nowWithOffset } from '../design/format'
+import { fmtClock, fmtDuration, todayLong, dateKey } from '../design/format'
 import { useT } from '../i18n/useT'
 import type { CSSProperties } from 'react'
 
 const MENU_W = 320
 
+function useNowTick(rolloverHour: number): number {
+  const [now, setNow] = useState(() => Date.now())
+
+  useEffect(() => {
+    let timeout: ReturnType<typeof setTimeout> | null = null
+
+    const scheduleNextMidnight = (): void => {
+      // dateKey() uses the UTC date of (now - rollover), so the next key-change is
+      // the next UTC midnight in adjusted time.
+      const adjusted = Date.now() - rolloverHour * 3600_000
+      const nextUtcMidnight = (Math.floor(adjusted / 86400_000) + 1) * 86400_000
+      const msUntil = nextUtcMidnight - adjusted + 5_000
+      timeout = setTimeout(() => {
+        setNow(Date.now())
+        scheduleNextMidnight()
+      }, msUntil)
+    }
+    scheduleNextMidnight()
+
+    const refresh = (): void => setNow(Date.now())
+    window.addEventListener('focus', refresh)
+    document.addEventListener('visibilitychange', refresh)
+
+    return () => {
+      if (timeout) clearTimeout(timeout)
+      window.removeEventListener('focus', refresh)
+      document.removeEventListener('visibilitychange', refresh)
+    }
+  }, [rolloverHour])
+
+  return now
+}
+
 function useTodayKey(): string {
   const rollover = useDailyStore((s) => s.settings.dayRolloverHour)
   const offset = useDailyStore((s) => s.settings.devDayOffset)
-  return dateKey(nowWithOffset(offset), rollover)
+  const now = useNowTick(rollover)
+  return dateKey(now + offset * 86400_000, rollover)
 }
 
 function useTodaysSessions(): { totalSeconds: number; count: number } {
@@ -80,56 +114,117 @@ function pillButton(tone: 'accent' | 'ghost', full = true): CSSProperties {
   }
 }
 
-function OpenAppCorner({ alignTop }: { alignTop: number }): React.JSX.Element {
-  const t = useT()
+function DragStrip(): React.JSX.Element {
   return (
-    <button
-      onClick={() => {
-        window.api.showMainWindow()
-        window.api.hideTrayWindow()
+    <div
+      style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        // Stop short of the corner controls so the buttons stay clickable.
+        right: 70,
+        height: 28,
+        zIndex: 0,
+        // @ts-expect-error - non-standard CSS for window dragging
+        WebkitAppRegion: 'drag'
       }}
-      title={t('open_app')}
-      aria-label={t('open_app')}
+    />
+  )
+}
+
+const cornerBtn: CSSProperties = {
+  width: 24,
+  height: 24,
+  borderRadius: 6,
+  background: 'transparent',
+  border: 'none',
+  outline: 'none',
+  color: 'var(--ink-3)',
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  cursor: 'pointer',
+  transition: 'color 120ms ease',
+  // @ts-expect-error - non-standard CSS region toggle for the drag strip
+  WebkitAppRegion: 'no-drag'
+}
+
+function CornerControls({ alignTop }: { alignTop: number }): React.JSX.Element {
+  const t = useT()
+  const pinned = useDailyStore((s) => s.settings.pinTray)
+  return (
+    <div
       style={{
         position: 'absolute',
         top: alignTop,
         right: 12,
-        width: 24,
-        height: 24,
-        borderRadius: 6,
-        background: 'transparent',
-        border: 'none',
-        outline: 'none',
-        color: 'var(--ink-3)',
         display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        cursor: 'pointer',
-        transition: 'color 120ms ease',
+        gap: 2,
         zIndex: 1
       }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.color = 'var(--ink)'
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.color = 'var(--ink-3)'
-      }}
     >
-      <svg
-        width="13"
-        height="13"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+      {pinned && (
+        <button
+          onClick={async () => {
+            await window.api.tray.setPinned(false)
+            await window.api.hideTrayWindow()
+          }}
+          title={t('minimize_to_tray')}
+          aria-label={t('minimize_to_tray')}
+          style={cornerBtn}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = 'var(--ink)'
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = 'var(--ink-3)'
+          }}
+        >
+          <svg
+            width="13"
+            height="13"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M12 19V5" />
+            <path d="M5 12l7-7 7 7" />
+          </svg>
+        </button>
+      )}
+      <button
+        onClick={() => {
+          window.api.showMainWindow()
+          window.api.hideTrayWindow()
+        }}
+        title={t('open_app')}
+        aria-label={t('open_app')}
+        style={cornerBtn}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.color = 'var(--ink)'
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.color = 'var(--ink-3)'
+        }}
       >
-        <path d="M14 4h6v6" />
-        <path d="M20 4L12 12" />
-        <path d="M19 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5" />
-      </svg>
-    </button>
+        <svg
+          width="13"
+          height="13"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M14 4h6v6" />
+          <path d="M20 4L12 12" />
+          <path d="M19 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5" />
+        </svg>
+      </button>
+    </div>
   )
 }
 
@@ -419,14 +514,15 @@ export function MenuDropdown(): React.JSX.Element {
             <Icon name="arrow-right" size={14} />
           </button>
         </div>
-        <OpenAppCorner alignTop={14} />
+        <DragStrip />
+        <CornerControls alignTop={14} />
       </div>
     )
   }
 
   return (
     <div ref={rootRef} style={wrap}>
-      <OpenAppCorner alignTop={hasGoal ? 12 : 14} />
+      <CornerControls alignTop={hasGoal ? 12 : 14} />
       {hasGoal && (
         <>
           <div style={{ padding: '16px 18px 14px' }}>
@@ -484,7 +580,7 @@ export function MenuDropdown(): React.JSX.Element {
           <IdleStart totalToday={totalToday} sessionsLogged={sessionsLogged} />
         )}
       </div>
-
+      <DragStrip />
     </div>
   )
 }
