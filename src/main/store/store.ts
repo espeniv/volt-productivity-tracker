@@ -120,7 +120,9 @@ export function initStore(): void {
 
   // Backfill defaults onto previously-persisted settings (covers brand-new fields).
   const current = store.get('settings')
-  store.set('settings', { ...defaultSettings, ...current })
+  // pinTray is a transient UI state — always start a fresh launch unpinned so the
+  // tray window opens under the menu-bar icon, not at the last dragged location.
+  store.set('settings', { ...defaultSettings, ...current, pinTray: false })
 
   // Run any migrations the user hasn't seen yet, in order.
   const from = (store.get('schemaVersion') as number | undefined) ?? 0

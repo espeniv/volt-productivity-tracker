@@ -189,8 +189,9 @@ function CornerControls({ alignTop }: { alignTop: number }): React.JSX.Element {
             strokeLinecap="round"
             strokeLinejoin="round"
           >
-            <path d="M12 19V5" />
-            <path d="M5 12l7-7 7 7" />
+            <path d="M4 4h16" />
+            <path d="M12 20V10" />
+            <path d="M7 15l5-5 5 5" />
           </svg>
         </button>
       )}

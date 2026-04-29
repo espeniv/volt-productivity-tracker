@@ -40,6 +40,8 @@ export function createTrayWindow(): BrowserWindow {
     frame: false,
     resizable: false,
     movable: true,
+    minimizable: false,
+    maximizable: false,
     skipTaskbar: true,
     alwaysOnTop: true,
     fullscreenable: false,
@@ -52,6 +54,9 @@ export function createTrayWindow(): BrowserWindow {
       sandbox: false
     }
   })
+
+  // Belt-and-suspenders: enforce non-resizable even if some platform default flips it.
+  trayWindow.setResizable(false)
 
   trayWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true })
 
