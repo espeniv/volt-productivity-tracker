@@ -3,6 +3,7 @@ import { getSettings, getState } from '../store/store'
 import { showFloatingWindow } from '../windows/floating-window'
 
 let timeout: NodeJS.Timeout | null = null
+let initialFireTimeout: NodeJS.Timeout | null = null
 
 function parseReminderTime(s: string): { hour: number; minute: number } {
   const m = /^(\d{1,2}):(\d{2})$/.exec(s.trim())
@@ -67,7 +68,7 @@ export function initMorningReminder(): void {
   // If the app started after today's reminder time and the user hasn't checked in,
   // surface the reminder once on launch as well.
   if (now.getHours() > hour || (now.getHours() === hour && now.getMinutes() >= minute)) {
-    setTimeout(maybeFire, 2000)
+    initialFireTimeout = setTimeout(maybeFire, 2000)
   }
   scheduleNext()
 }
@@ -75,6 +76,17 @@ export function initMorningReminder(): void {
 /** Re-arm the timeout when the user changes the reminder time. */
 export function rescheduleMorningReminder(): void {
   scheduleNext()
+}
+
+export function stopMorningReminder(): void {
+  if (timeout) {
+    clearTimeout(timeout)
+    timeout = null
+  }
+  if (initialFireTimeout) {
+    clearTimeout(initialFireTimeout)
+    initialFireTimeout = null
+  }
 }
 
 /** Fire the notification immediately, ignoring all conditions. For Settings → "Test reminder now". */

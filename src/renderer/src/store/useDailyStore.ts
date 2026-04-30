@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import type { DailyEntry, Session, Settings, TimerState } from '../../../shared/types'
+import { defaultSettings, initialTimerState } from '../../../shared/defaults'
 
 function shallowEqual(a: object, b: object): boolean {
   if (a === b) return true
@@ -35,25 +36,11 @@ interface DailyStore {
   updateSettings: (patch: Partial<Settings>) => void
 }
 
-const defaultSettings: Settings = {
-  overarchingGoal: '',
-  dayRolloverHour: 0,
-  hideDock: true,
-  autoLaunch: false,
-  accent: '#5B9DD9',
-  gentleReminder: false,
-  reminderTime: '10:00',
-  pinTray: false,
-  onboarded: false,
-  devDayOffset: 0,
-  language: 'en'
-}
-
 export const useDailyStore = create<DailyStore>((set) => ({
   sessions: {},
   entries: {},
   settings: defaultSettings,
-  timer: { status: 'idle', currentSessionId: null, startedAt: null, accumulatedMs: 0 },
+  timer: initialTimerState,
   hydrated: false,
 
   setHydrated: ({ sessions, entries, settings }) =>

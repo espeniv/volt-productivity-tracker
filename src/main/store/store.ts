@@ -1,20 +1,9 @@
 import Store from 'electron-store'
 import type { DailyEntry, PersistedState, Session, Settings } from '../../shared/types'
 import { CURRENT_SCHEMA_VERSION } from '../../shared/types'
+import { defaultSettings } from '../../shared/defaults'
 
-export const defaultSettings: Settings = {
-  overarchingGoal: '',
-  dayRolloverHour: 0,
-  hideDock: true,
-  autoLaunch: false,
-  accent: '#5B9DD9',
-  gentleReminder: false,
-  reminderTime: '10:00',
-  pinTray: false,
-  onboarded: false,
-  devDayOffset: 0,
-  language: 'en'
-}
+export { defaultSettings }
 
 const schema = {
   sessions: {

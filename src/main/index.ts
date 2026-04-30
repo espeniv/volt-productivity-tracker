@@ -8,7 +8,7 @@ import { getTimerState, initTimer, stopTimer } from './timer/timer'
 import { initPowerMonitor } from './power/power'
 import { applySettingsSideEffects, registerIpcHandlers } from './ipc/ipc'
 import { initAutoUpdater } from './updater/updater'
-import { initMorningReminder } from './notifications/morning-reminder'
+import { initMorningReminder, stopMorningReminder } from './notifications/morning-reminder'
 
 app.whenReady().then(() => {
   electronApp.setAppUserModelId('com.voltapp.app')
@@ -47,4 +47,5 @@ app.on('activate', () => {
 
 app.on('before-quit', () => {
   if (getTimerState().status !== 'idle') stopTimer()
+  stopMorningReminder()
 })
