@@ -30,7 +30,7 @@ mac:
   # → Open the first time you launch the unsigned .app. Set this to your real
   # Developer ID identity ("Developer ID Application: Your Name (TEAMID)") when
   # you're ready to ship a signed + notarized DMG.
-  identity: "Developer ID Application: Espen Iversen (NFJ7LFXU34)" 
+  identity: "Espen Iversen (NFJ7LFXU34)"
 dmg:
   artifactName: Volt-${version}-${arch}.${ext}
 npmRebuild: false
