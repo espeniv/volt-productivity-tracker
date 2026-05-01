@@ -1,4 +1,4 @@
-# daily-scaffold
+# Volt
 
 An Electron application with React and TypeScript
 
