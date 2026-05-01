@@ -3,7 +3,7 @@ import { BrowserWindow } from 'electron'
 import { IpcChannels } from '../../shared/ipc-channels'
 import type { Session, TimerState } from '../../shared/types'
 import { upsertSession, deleteSession, getState, getSettings } from '../store/store'
-import { setTrayActive } from '../tray/tray'
+import { setTrayActive, setTrayTitle } from '../tray/tray'
 
 let state: TimerState = {
   status: 'idle',
@@ -13,6 +13,7 @@ let state: TimerState = {
 }
 
 let persistInterval: NodeJS.Timeout | null = null
+let trayTitleInterval: NodeJS.Timeout | null = null
 
 export function getTimerState(): TimerState {
   return { ...state }
@@ -128,10 +129,39 @@ function stopPersistLoop(): void {
   }
 }
 
+function formatElapsed(ms: number): string {
+  const total = Math.max(0, Math.floor(ms / 1000))
+  const h = Math.floor(total / 3600)
+  const m = Math.floor((total % 3600) / 60)
+  const s = total % 60
+  const pad = (n: number): string => n.toString().padStart(2, '0')
+  return h > 0 ? `${h}:${pad(m)}:${pad(s)}` : `${m}:${pad(s)}`
+}
+
+function updateTrayTitle(): void {
+  setTrayTitle(formatElapsed(currentTotalMs()))
+}
+
+function startTrayTitleLoop(): void {
+  stopTrayTitleLoop()
+  updateTrayTitle()
+  trayTitleInterval = setInterval(updateTrayTitle, 1000)
+}
+
+function stopTrayTitleLoop(): void {
+  if (trayTitleInterval) {
+    clearInterval(trayTitleInterval)
+    trayTitleInterval = null
+  }
+  setTrayTitle('')
+}
+
 function broadcast(): void {
   const snapshot = getTimerState()
   const persisted = getState()
   setTrayActive(snapshot.status === 'running')
+  if (snapshot.status === 'running') startTrayTitleLoop()
+  else stopTrayTitleLoop()
   for (const win of BrowserWindow.getAllWindows()) {
     win.webContents.send(IpcChannels.TimerStateChanged, snapshot)
     win.webContents.send(IpcChannels.StoreStateChanged, persisted)

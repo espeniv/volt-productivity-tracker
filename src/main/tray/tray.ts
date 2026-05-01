@@ -31,6 +31,11 @@ export function createTray(): Tray {
 
 export function setTrayActive(active: boolean): void {
   tray?.setImage(loadImage(active ? iconActivePath : iconPath))
+  if (!active) tray?.setTitle('')
+}
+
+export function setTrayTitle(text: string): void {
+  tray?.setTitle(text)
 }
 
 export function getTray(): Tray | null {
