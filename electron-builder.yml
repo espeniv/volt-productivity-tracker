@@ -32,8 +32,9 @@ mac:
   # you're ready to ship a signed + notarized DMG.
   identity: "Espen Iversen (NFJ7LFXU34)"
 dmg:
-  artifactName: Volt-${version}-${arch}.${ext}
+  artifactName: Volt-${arch}.${ext}
 npmRebuild: false
 publish:
-  provider: generic
-  url: https://example.com/auto-updates
+  provider: github
+  owner: espeniv
+  repo: volt-productivity-tracker
