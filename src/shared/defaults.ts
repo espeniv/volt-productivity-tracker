@@ -5,7 +5,7 @@ export const defaultSettings: Settings = {
   dayRolloverHour: 0,
   hideDock: true,
   autoLaunch: false,
-  accent: '#5B9DD9',
+  accent: '#F59E0B',
   gentleReminder: false,
   reminderTime: '10:00',
   pinTray: false,

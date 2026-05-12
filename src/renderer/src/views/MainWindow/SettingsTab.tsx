@@ -4,7 +4,7 @@ import { Logo } from '../../design/Logo'
 import { useT } from '../../i18n/useT'
 import type { Language, Settings } from '../../../../shared/types'
 
-const ACCENTS = ['#5B9DD9', '#3FB364', '#D97757', '#EAB308']
+const ACCENTS = ['#F59E0B', '#3ECF8E', '#7C6BFF', '#F87171']
 
 function SettingsGroup({
   title,

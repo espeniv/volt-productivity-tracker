@@ -387,8 +387,8 @@ function ActiveTimer({
           style={{
             flex: 1,
             height: 40,
-            background: '#1A1F2A',
-            color: '#F4F6FA',
+            background: 'var(--glass-flat)',
+            color: 'var(--ink)',
             border: 'none',
             borderRadius: 10,
             fontSize: 13,
