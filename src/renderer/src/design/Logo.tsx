@@ -40,16 +40,16 @@ export function Logo({ size = 32, monochrome, style, title }: Props): React.JSX.
     >
       <defs>
         <linearGradient id="voltLogoTile" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#2E2516" />
-          <stop offset="1" stopColor="#160F07" />
+          <stop offset="0" stopColor="#3A3A3D" />
+          <stop offset="1" stopColor="#1F1F22" />
         </linearGradient>
         <linearGradient id="voltLogoBolt" x1="0.2" y1="0" x2="0.85" y2="1">
-          <stop offset="0" stopColor="#FFE27A" />
-          <stop offset="0.50" stopColor="#F59E0B" />
-          <stop offset="1" stopColor="#C97A05" />
+          <stop offset="0" stopColor="#A8DCFF" />
+          <stop offset="0.55" stopColor="#5DA8F0" />
+          <stop offset="1" stopColor="#3D7FCF" />
         </linearGradient>
         <linearGradient id="voltLogoShine" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#FFFFFF" stopOpacity="0.45" />
+          <stop offset="0" stopColor="#FFFFFF" stopOpacity="0.55" />
           <stop offset="1" stopColor="#FFFFFF" stopOpacity="0" />
         </linearGradient>
       </defs>
