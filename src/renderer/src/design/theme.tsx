@@ -20,6 +20,6 @@ export function useApplyTheme(): void {
     root.style.setProperty('--accent', accent)
     root.style.setProperty('--accent-soft', hexA(accent, 0.12))
     root.style.setProperty('--accent-ring', hexA(accent, 0.35))
-    root.style.setProperty('--accent-ink', relativeLuminance(accent) > 0.55 ? '#1A1F2A' : '#FFFFFF')
+    root.style.setProperty('--accent-ink', relativeLuminance(accent) > 0.40 ? '#1C1100' : '#FFFFFF')
   }, [accent])
 }

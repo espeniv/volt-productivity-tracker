@@ -1,53 +1,52 @@
-/* Daily — design tokens (v2: Liquid Glass + Pine accent)
- * Aesthetic: native macOS Tahoe vibrancy. Translucent surfaces, subtle saturation,
- * crisp hairlines, system-feeling type. No serif for content.
- * Accent: pine green #1F6B3A — used sparingly.
+/* Volt — design tokens (v3: Warm Obsidian + Electric Amber)
+ * Aesthetic: warm dark glass, amber accent matching the lightning bolt identity.
+ * Space Grotesk for a geometric, technical personality distinct from system defaults.
  */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
 
 :root {
-  /* Type — system-first, Inter as fallback so it feels like SF Pro on macOS */
-  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Inter', system-ui, sans-serif;
-  --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', system-ui, sans-serif;
-  --font-mono: ui-monospace, 'SF Mono', 'JetBrains Mono', monospace;
+  /* Type — Space Grotesk as primary, system stack as fallback */
+  --font-sans: 'Space Grotesk', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-display: 'Space Grotesk', -apple-system, system-ui, sans-serif;
+  --font-mono: 'Space Mono', ui-monospace, 'SF Mono', monospace;
 
-  /* Radii — Tahoe leans bigger */
+  /* Radii */
   --r-xs: 6px;
   --r-sm: 8px;
   --r-md: 12px;
   --r-lg: 16px;
   --r-xl: 22px;
 
-  /* Single theme — translucent dark glass, light text */
-  --bg: #ECEEF1;                       /* desktop tone */
-  --glass: rgba(48, 55, 68, 0.56);     /* mid-dark translucent — between previous light + dark */
-  --glass-2: rgba(66, 74, 88, 0.62);   /* nested frosted */
-  --glass-flat: #3D4453;               /* fallback when blur not supported */
-  --bg-sunken: rgba(255, 255, 255, 0.06);
-  --bg-hover: rgba(255, 255, 255, 0.10);
-  --line: rgba(255, 255, 255, 0.10);
-  --line-strong: rgba(255, 255, 255, 0.22);
-  --hairline: rgba(255, 255, 255, 0.18);
+  /* Single theme — warm obsidian glass, amber accent */
+  --bg: #1A1714;                              /* warm dark desktop tone */
+  --glass: rgba(28, 23, 16, 0.84);            /* warm dark translucent */
+  --glass-2: rgba(42, 35, 24, 0.88);          /* nested frosted */
+  --glass-flat: #2A2318;                      /* fallback when blur not supported */
+  --bg-sunken: rgba(255, 195, 60, 0.07);
+  --bg-hover: rgba(255, 195, 60, 0.12);
+  --line: rgba(255, 195, 60, 0.10);
+  --line-strong: rgba(255, 195, 60, 0.20);
+  --hairline: rgba(255, 195, 60, 0.15);
 
-  --ink: #F4F6FA;
-  --ink-2: #DCE0E8;
-  --ink-3: #ADB3C0;
-  --ink-4: #858B98;
-  --ink-5: #5C616D;
+  --ink: #FBF7F0;
+  --ink-2: #E6DFD0;
+  --ink-3: #A89A82;
+  --ink-4: #6D6152;
+  --ink-5: #463E34;
 
-  --accent: #5B9DD9;                   /* sky */
-  --accent-hover: #4A8AC5;
-  --accent-soft: rgba(91, 157, 217, 0.12);
-  --accent-ring: rgba(91, 157, 217, 0.35);
-  --accent-ink: #FFFFFF;
+  --accent: #F59E0B;                          /* electric amber */
+  --accent-hover: #D97706;
+  --accent-soft: rgba(245, 158, 11, 0.13);
+  --accent-ring: rgba(245, 158, 11, 0.32);
+  --accent-ink: #1C1100;                      /* dark text on bright amber */
 
-  --shadow-sm: 0 1px 2px rgba(15, 22, 35, 0.18);
-  --shadow-md: 0 6px 18px rgba(15, 22, 35, 0.20), 0 1px 2px rgba(15, 22, 35, 0.10);
-  --shadow-lg: 0 30px 60px -16px rgba(15, 22, 35, 0.36), 0 10px 20px -10px rgba(15, 22, 35, 0.18);
-  --shadow-glass: 0 20px 44px -12px rgba(15, 22, 35, 0.32), 0 4px 12px rgba(15, 22, 35, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.40), 0 1px 3px rgba(0, 0, 0, 0.20);
+  --shadow-lg: 0 30px 60px -16px rgba(0, 0, 0, 0.55), 0 10px 20px -10px rgba(0, 0, 0, 0.35);
+  --shadow-glass: 0 20px 44px -12px rgba(0, 0, 0, 0.55), 0 4px 12px rgba(0, 0, 0, 0.30), inset 0 1px 0 rgba(255, 210, 100, 0.14);
 
-  --blur: blur(50px) saturate(180%);
+  --blur: blur(60px) saturate(220%);
 }
 
 /* Reset-ish */

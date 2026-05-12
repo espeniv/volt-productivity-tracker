@@ -38,7 +38,7 @@ export function MainWindow(): React.JSX.Element {
     >
       <div
         style={{
-          height: 44,
+          height: 48,
           display: 'flex',
           alignItems: 'center',
           padding: '0 14px 0 84px',
@@ -51,7 +51,8 @@ export function MainWindow(): React.JSX.Element {
         <div
           style={{
             display: 'flex',
-            gap: 4,
+            gap: 2,
+            height: '100%',
             // @ts-expect-error - non-standard CSS
             WebkitAppRegion: 'no-drag'
           }}
@@ -64,21 +65,21 @@ export function MainWindow(): React.JSX.Element {
                 key={tabKey}
                 onClick={() => setTab(tabKey)}
                 style={{
-                  background: active ? 'var(--bg-sunken)' : 'transparent',
+                  background: 'transparent',
                   border: 'none',
-                  padding: '6px 12px',
-                  borderRadius: 8,
+                  borderBottom: active ? '2px solid var(--accent)' : '2px solid transparent',
+                  padding: '0 12px',
                   fontSize: 13,
-                  color: active ? 'var(--ink)' : 'var(--ink-3)',
-                  fontWeight: 500,
-                  textTransform: 'capitalize',
+                  color: active ? 'var(--ink)' : 'var(--ink-4)',
+                  fontWeight: active ? 600 : 400,
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: 6,
-                  cursor: 'pointer'
+                  cursor: 'pointer',
+                  transition: 'color 120ms ease, border-color 120ms ease'
                 }}
               >
-                <Icon name={tabKey === 'today' ? 'today' : 'calendar'} size={13} stroke={1.6} />
+                <Icon name={tabKey === 'today' ? 'today' : 'calendar'} size={13} stroke={active ? 2 : 1.5} />
                 <span>{label}</span>
               </button>
             )
@@ -103,13 +104,13 @@ export function MainWindow(): React.JSX.Element {
             background: settingsOpen ? 'var(--bg-sunken)' : 'transparent',
             border: 'none',
             cursor: 'pointer',
-            color: settingsOpen ? 'var(--ink)' : 'var(--ink-3)',
-            transition: 'background 120ms ease, color 120ms ease',
+            color: settingsOpen ? 'var(--accent)' : 'var(--ink-4)',
+            transition: 'color 120ms ease',
             // @ts-expect-error - non-standard CSS
             WebkitAppRegion: 'no-drag'
           }}
         >
-          <Icon name="gear" size={15} stroke={1.6} />
+          <Icon name="gear" size={15} stroke={settingsOpen ? 2 : 1.5} />
         </button>
       </div>
 
